@@ -1,0 +1,9 @@
+messages:
+  command.verify.start: "In order to authenticate yourself with your SpigotMc account please click the following link
+  \n \n https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
+  command.verify.already: "Your account is already verified or there is already an open verification request."
+  account.verified.failed: "Invalid authentication key or your account is already verified."
+  account.verified.discord: "Your Discord account is now successfully linked to your SpigotMc account (%spigotMcUser%)"
+  account.verified.spigotmc: "Your SpigotMc account is now successfully linked to your Discord account (%discordUser%)"
+  spigotmc.getuserid.send: "Your UserId: %key%"
+  spigotmc.getuserid.notExist: "We don´t have any UserId for you!"

@@ -20,11 +20,19 @@
 
         <dependency.spigotsite.version>1.0.2.4-SNAPSHOT</dependency.spigotsite.version>
         <dependency.jda.version>4.1.1_165</dependency.jda.version>
+        <dependency.jda.utilities.version>3.0.4</dependency.jda.utilities.version>
 
         <dependency.kotlin.version>1.3.72</dependency.kotlin.version>
+
         <dependency.pretronic.libraries.version>1.2.6.142-SNAPSHOT</dependency.pretronic.libraries.version>
         <dependency.pretronic.libraries.utility.version>${dependency.pretronic.libraries.version}</dependency.pretronic.libraries.utility.version>
-        <dependency.kotlin.version>1.3.72</dependency.kotlin.version>
+        <dependency.pretronic.libraries.document.version>${dependency.pretronic.libraries.version}</dependency.pretronic.libraries.document.version>
+        <dependency.pretronic.libraries.caching.version>${dependency.pretronic.libraries.version}</dependency.pretronic.libraries.caching.version>
+        <dependency.pretronic.libraries.concurrent.version>${dependency.pretronic.libraries.version}</dependency.pretronic.libraries.concurrent.version>
+        <dependency.pretronic.libraries.logging.version>${dependency.pretronic.libraries.version}</dependency.pretronic.libraries.logging.version>
+        <dependency.pretronic.databasequery.version>1.2.26.52-SNAPSHOT</dependency.pretronic.databasequery.version>
+
+        <dependency.mariadb.version>2.6.0</dependency.mariadb.version>
 
 
         <plugin.maven.compiler.version>3.8.1</plugin.maven.compiler.version>
@@ -63,6 +71,13 @@
             <artifactId>JDA</artifactId>
             <version>${dependency.jda.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>jda-utilities</artifactId>
+            <version>${dependency.jda.utilities.version}</version>
+            <scope>compile</scope>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>net.pretronic.libraries</groupId>
@@ -70,6 +85,50 @@
             <version>${dependency.pretronic.libraries.utility.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.pretronic.libraries</groupId>
+            <artifactId>pretroniclibraries-document</artifactId>
+            <version>${dependency.pretronic.libraries.document.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.pretronic.libraries</groupId>
+            <artifactId>pretroniclibraries-caching</artifactId>
+            <version>${dependency.pretronic.libraries.caching.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.pretronic.libraries</groupId>
+            <artifactId>pretroniclibraries-concurrent</artifactId>
+            <version>${dependency.pretronic.libraries.concurrent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.pretronic.libraries</groupId>
+            <artifactId>pretroniclibraries-logging</artifactId>
+            <version>${dependency.pretronic.libraries.logging.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.pretronic.databasequery</groupId>
+            <artifactId>pretronicdatabasequery-sql</artifactId>
+            <version>${dependency.pretronic.databasequery.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.pretronic.databasequery</groupId>
+            <artifactId>pretronicdatabasequery-api-kotlin-dsl</artifactId>
+            <version>${dependency.pretronic.databasequery.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${dependency.mariadb.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
