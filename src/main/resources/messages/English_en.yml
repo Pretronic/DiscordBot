@@ -1,9 +1,27 @@
 messages:
   command.verify.start: "In order to authenticate yourself with your SpigotMc account please click the following link
-  \n \n https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
+  \n https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
   command.verify.already: "Your account is already verified or there is already an open verification request."
   account.verified.failed: "Invalid authentication key or your account is already verified."
   account.verified.discord: "Your Discord account is now successfully linked to your SpigotMc account (%spigotMcUser%)"
   account.verified.spigotmc: "Your SpigotMc account is now successfully linked to your Discord account (%discordUser%)"
   spigotmc.getuserid.send: "Your UserId: %key%"
   spigotmc.getuserid.notExist: "We don´t have any UserId for you!"
+  discord.getuserid.send: "Your UserId: %key%"
+  discord.getuserid.notExist: "You need to verify your SpigotMC Account first with !verify command"
+  discord.ticket.controlMessage:
+    author:
+      name: "Create ticket"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    description: "You've created a support ticket. React with :lock: or type -close to close the ticket. Ticket will automatically close after 14 days of inactivity."
+    color: "RANDOM_BRIGHT"
+  discord.ticket.projectChoose:
+    author:
+      name: "Click to choose project"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    description: "React with the corresponding project icon for which you need support"
+    color: "RANDOM_BRIGHT"
+  discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
+  discord.ticket.closed.self: "Your ticket %name% has been closed by you."

@@ -6,8 +6,8 @@ import net.pretronic.spigotsite.api.user.User
 
 fun Conversation.replyKey(user: User, messageKey: String, replacements: Map<String, String>) {
     val message0 = DiscordBot.INSTANCE.messageManager.getMessage(null, messageKey)
-    var message = message0.message
-    replacements.forEach { message = message.replace("%${it.key}%", it.value) }
+    var message = message0.content
+    replacements.forEach { message = message?.replace("%${it.key}%", it.value) }
     reply(user, message)
 }
 

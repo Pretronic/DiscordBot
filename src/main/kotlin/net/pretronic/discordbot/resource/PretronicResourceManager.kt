@@ -12,7 +12,7 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
     val resources = ArrayList<PretronicResource>()
 
     fun init(): PretronicResourceManager {
-        val result: QueryResult = DiscordBot.INSTANCE.storage.resourceTable.find().execute()//.where("Licensed", true)
+        val result: QueryResult = DiscordBot.INSTANCE.storage.resource.find().execute()
         for (entry in result) {
             resources.add(PretronicResource(entry.getInt("Id"), entry.getString("PublicId"), entry.getString("Name")
                     , entry.getInt("SpigotMcResourceId"), entry.getBoolean("Licensed")))
@@ -24,6 +24,10 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
 
     fun getResource(id: Int): PretronicResource {
         return resources.first { it.id == id }
+    }
+
+    fun createDiscordResourceRoles() {
+        resources.forEach { it.setDiscordRole() }
     }
 
     fun startResourceSynchronizer() {
@@ -39,7 +43,8 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
                                 for (buyer in SpigotSite.getAPI().resourceManager.getPremiumResourceBuyers(spigotResource, discordBot.config.spigotUser)) {
                                     var user = discordBot.userManager.getUserBySpigotMc(buyer.userId)
                                     if (user == null) user = discordBot.userManager.createUser(buyer.userId, buyer.username)
-                                    if (!user.resources.contains(resource)) user.resources.add(resource)
+                                    if (!user.resources.contains(resource)) user.addResource(resource)
+                                    user.addVerifiedRoles()
                                 }
                             }
                         }

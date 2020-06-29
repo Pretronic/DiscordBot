@@ -1,6 +1,10 @@
 package net.pretronic.discordbot.message
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.pretronic.discordbot.DiscordBot
+import net.pretronic.discordbot.message.embed.EmbedAuthorData
+import net.pretronic.discordbot.message.embed.EmbedData
+import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.user.PretronicUser
 import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.entry.PrimitiveEntry
@@ -12,7 +16,6 @@ import java.nio.file.Paths
 
 class MessageManager(private val discordBot: DiscordBot) {
 
-    private val defaultLanguage : Language = Language("English", "en")
     private val packs = ArrayList<MessagePack>()
 
     fun getMessage(pretronicUser: PretronicUser, messageKey: String) : Message {
@@ -20,14 +23,18 @@ class MessageManager(private val discordBot: DiscordBot) {
     }
 
     fun getMessage(language0: Language?, messageKey : String) : Message {
-        val language : Language = language0 ?: this.defaultLanguage
+        val language : Language = language0 ?: discordBot.languageManager.defaultLanguage
         val pack : MessagePack = packs.firstOrNull { it.language == language }?:getDefaultPack()
 
-        return pack.messages.firstOrNull { it.messageKey == messageKey}?: getDefaultPack().messages.first { it.messageKey == messageKey }
+        return pack.messages.firstOrNull { it.key == messageKey}?: getDefaultPack().messages.first { it.key == messageKey }
     }
 
     private fun getDefaultPack() : MessagePack {
-        return packs.first { it.language == this.defaultLanguage }
+        return packs.first { it.language == discordBot.languageManager.defaultLanguage }
+    }
+
+    private fun getDefaultLanguage(): Language {
+        return discordBot.languageManager.defaultLanguage
     }
 
     fun loadPacks() {
@@ -40,7 +47,7 @@ class MessageManager(private val discordBot: DiscordBot) {
         }
         FileUtil.processFilesHierarchically(messagesPath) {
             val splitted = it.nameWithoutExtension.split("_")
-            val language = Language(splitted[0], splitted[1])
+            val language = discordBot.languageManager.getOrCreate(splitted[0], splitted[1])
             loadPack(language, DocumentFileType.YAML.reader.read(it))
         }
         discordBot.logger.info("Loaded ${this.packs.size} packs")
@@ -49,9 +56,32 @@ class MessageManager(private val discordBot: DiscordBot) {
     private fun loadPack(language: Language, document : Document) {
         val messages = ArrayList<Message>()
         document.getDocument("messages").forEach {
+            /*
             it as PrimitiveEntry
-            val message = Message(it.key, it.asString)
-            messages.add(message)
+
+             */
+            if(it is PrimitiveEntry) {
+                val message = Message(it.key, it.asString, null)
+                messages.add(message)
+            } else {
+                it as Document
+
+                var embedAuthorData: EmbedAuthorData? = null
+
+                if(it.contains("author")) {
+                    val authorData = it.getDocument("author")
+                    if(authorData.contains("url") && authorData.contains("iconUrl")) {
+                        embedAuthorData = EmbedAuthorData(authorData.getString("name"),
+                                authorData.getString("url"),
+                                authorData.getString("iconUrl"))
+                    } else {
+                        embedAuthorData = EmbedAuthorData(authorData.getString("name"), null, null)
+                    }
+                }
+                val description = if(it.contains("description")) it.getString("description") else null
+
+                messages.add(Message(it.key, null, EmbedData(embedAuthorData, description, it.getString("color"))))
+            }
         }
         val messagePack = MessagePack(language, messages)
         this.packs.add(messagePack)

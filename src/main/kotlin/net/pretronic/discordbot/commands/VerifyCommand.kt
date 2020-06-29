@@ -13,20 +13,6 @@ class VerifyCommand(private val discordBot: DiscordBot) : Command() {
     }
 
     override fun execute(event: CommandEvent) {
-        try {
-            if(discordBot.userManager.getUserByDiscord(event.member.idLong) == null) {
-                val pendingUserVerification = discordBot.userManager.createPendingVerificationUser(event.author.idLong)
-                event.author.openPrivateChannel().queue {
-                    it.sendMessageKey(Messages.COMMAND_VERIFY_START, mapOf(Pair("secret", pendingUserVerification.secret))).queue()
-                }
-            } else {
-                event.author.openPrivateChannel().queue {
-                    it.sendMessageKey(Messages.COMMAND_VERIFY_ALREADY).queue()
-                }
-            }
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-        }
-
+        discordBot.userManager.verify(event.member)
     }
 }

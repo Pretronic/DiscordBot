@@ -1,0 +1,28 @@
+botToken: 'NDcwNjI0NDczMTg4NjYzMzA3.XvJxng.LhQKS5xD8D1hfrmLumF8Rc7UXqM'
+databaseName: 'pretronic'
+storage:
+  address: 'deyna.ch:9877'
+  username: 'discordbot'
+  password: 'EoU)tRHzNTy9s8CnE49zI2IHr35hJU'
+  driver: 'net.pretronic.databasequery.sql.driver.SQLDatabaseDriver'
+  name: 'SQL Pool-1'
+  dialectName: 'MariaDB'
+  useSSL: false
+verifiedRole: 725118186688741447
+teamRole: 725459519974539417
+guildId: 725094801669882000
+pendingUserVerificationExpiry: '1w'
+spigotLogin: 'Dkrieger'
+spigotPassword: 'qLPOy57ig9wWIcg6SEJafkTEmfls2EPRJDjx'
+spigotTwoFactorAuth: 'JXVHQIFIUHZV5H27'
+ticketVerifyMessageId: 726861884216574092
+ticketVerifyOpenReactionEmoji: 'white_check_mark'
+ticketTopics:
+  - name: 'General'
+    emoji: 'regional_indicator_g'
+ticketCategoryId: 726861791761662103
+languages:
+  - name: 'English'
+    localizedName: 'en'
+    default: false
+    emoji: 'flag_gb'
