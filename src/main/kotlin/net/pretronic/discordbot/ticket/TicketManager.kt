@@ -1,23 +1,23 @@
 package net.pretronic.discordbot.ticket
 
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.pretronic.databasequery.api.dsl.find
 import net.pretronic.databasequery.api.dsl.insert
+import net.pretronic.databasequery.api.query.result.QueryResult
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.extensions.addReaction
 import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
-import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
 import net.pretronic.libraries.utility.Validate
-import net.pretronic.libraries.utility.map.index.IndexLinkedHashMap
-import net.pretronic.libraries.utility.map.index.IndexMap
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class TicketManager(private val discordBot: DiscordBot) {
@@ -26,21 +26,24 @@ class TicketManager(private val discordBot: DiscordBot) {
 
     init {
         tickets.setMaxSize(50)
-        tickets.registerQuery("openMemberId", MemberIdQuery())
+        tickets.setExpireAfterAccess(60, TimeUnit.MINUTES)
+        tickets.registerQuery("openDiscordUserId", CloseDiscordUserIdQuery())
+        tickets.registerQuery("openDiscordChannelId", DiscordChannelIdQuery())
     }
 
     fun createTicket(member: Member, language: Language): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-        val ticket0 = tickets.get("openMemberId", member.idLong)
-        if(ticket0 == null) {
-            discordBot.config.ticketCategory.createTextChannel(language.localizedName+"-"+member.effectiveName).queue {
+        val ticket0 = tickets.get("openDiscordUserId", member.idLong)
+        if (ticket0 == null) {
+            discordBot.config.ticketCategory.createTextChannel(language.localizedName + "-" + member.effectiveName).queue {
+                it.upsertPermissionOverride(member).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ).queue()
                 it.sendMessageKey(Messages.DISCORD_TICKET_CONTROL_MESSAGE).queue { message ->
                     message.addReaction(discordBot.config.ticketCloseEmoji)?.queue()
 
                     val id = discordBot.storage.ticket.insert {
                         set("State", TicketState.TOPIC_CHOOSING.name)
                         set("ChannelId", it.idLong)
-                        set("Language", language.name+"_"+language.localizedName)
+                        set("Language", language.name + "_" + language.localizedName)
                         set("DiscordControlMessageId", message.idLong)
                     }.executeAndGetGeneratedKeyAsInt("Id")
 
@@ -72,9 +75,11 @@ class TicketManager(private val discordBot: DiscordBot) {
         return future
     }
 
+    fun getTicket(discordUserId: Long): Ticket? {
+        return tickets.get("openDiscordUserId", discordUserId)
+    }
 
-
-    private class MemberIdQuery: CacheQuery<Ticket> {
+    private class CloseDiscordUserIdQuery : CacheQuery<Ticket> {
 
         override fun check(ticket: Ticket, identifiers: Array<out Any>): Boolean {
             return ticket.isCreator(identifiers[0] as Long) && ticket.state != TicketState.CLOSED
@@ -92,7 +97,33 @@ class TicketManager(private val discordBot: DiscordBot) {
                 where("DiscordUserId", identifiers[0] as Long)
                 where("Role", TicketParticipantRole.CREATOR)
             }.execute()
-            if(!result.isEmpty) {
+            return loadTicket(result)
+        }
+    }
+
+    private class DiscordChannelIdQuery : CacheQuery<Ticket> {
+
+        override fun check(ticket: Ticket, identifiers: Array<out Any>): Boolean {
+            return ticket.discordChannelId == identifiers[0] as Long
+        }
+
+        override fun validate(identifiers: Array<out Any>) {
+            Validate.isTrue(identifiers.size == 1 && identifiers[0] is Long)
+        }
+
+        override fun load(identifiers: Array<out Any>): Ticket? {
+            val result = DiscordBot.INSTANCE.storage.ticket.find {
+                whereNot("State", "Closed")
+                where("ChannelId", identifiers[0] as Long)
+            }.execute()
+            return loadTicket(result)
+        }
+    }
+
+    private companion object {
+        fun loadTicket(result: QueryResult): Ticket? {
+
+            if (!result.isEmpty) {
                 val entry = result.first()
                 val languageSplit = entry.getString("Language").split("_")
 

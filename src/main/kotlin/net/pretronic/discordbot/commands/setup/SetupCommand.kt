@@ -14,11 +14,9 @@ class SetupCommand: Command() {
         hidden = true
         children = arrayOf(SetupSendMessageCommand(), SetupAddReactionCommand())
         helpBiConsumer = BiConsumer { event, command ->
-            run {
-                event.author.openPrivateChannel().queue {
-                    it.sendMessage("!setup sendMessage <messageKey>").queue()
-                    it.sendMessage("!setup addReaction <messageId> <reaction>").queue()
-                }
+            event.author.openPrivateChannel().queue {
+                it.sendMessage("!setup sendMessage <messageKey>").queue()
+                it.sendMessage("!setup addReaction <messageId> <reaction>").queue()
             }
         }
     }

@@ -3,6 +3,8 @@ package net.pretronic.discordbot
 import com.jagrosh.jdautilities.command.CommandClientBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.pretronic.databasequery.api.driver.DatabaseDriverFactory
@@ -25,7 +27,14 @@ import net.pretronic.libraries.logging.PretronicLoggerFactory
 import net.pretronic.libraries.logging.bridge.slf4j.SLF4JStaticBridge
 import net.pretronic.spigotsite.api.SpigotSite
 import net.pretronic.spigotsite.core.SpigotSiteCore
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.util.EntityUtils
 import java.io.File
+import java.io.IOException
+import java.nio.charset.StandardCharsets
 
 class DiscordBot {
 
@@ -106,6 +115,8 @@ class DiscordBot {
 
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
                 .setAutoReconnect(true)
+                .setStatus(config.botOnlineStatus)
+                .setActivity(Activity.of(config.botActivityType, config.botActivityName, config.botActivityUrl))
                 .addEventListeners(commandClientBuilder.build(), BotListeners(this))
                 .build()
         jda.awaitReady()
@@ -114,10 +125,23 @@ class DiscordBot {
         return jda
     }
 
-
     private fun initStorage() : Storage {
         val driver = DatabaseDriverFactory.create("DiscordBot", this.config.storage, this.logger)
         driver.connect()
         return Storage(driver.getDatabase(this.config.databaseName))
+    }
+
+    fun pasteAndGetKey(data: String): String {
+        val client: HttpClient = HttpClientBuilder.create().build()
+        val post = HttpPost("https://paste.pretronic.net/documents")
+        try {
+            post.entity = StringEntity(data, StandardCharsets.UTF_8)
+            val response = client.execute(post)
+            val result = EntityUtils.toString(response.entity)
+            return "https://paste.pretronic.net/" + DocumentFileType.JSON.reader.read(result).getString("key")
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return "Connection with https://paste.pretronic.net failed!"
     }
 }

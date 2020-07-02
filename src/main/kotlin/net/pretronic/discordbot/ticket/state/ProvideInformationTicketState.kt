@@ -18,7 +18,7 @@ class ProvideInformationTicketState: TicketState {
 
     override fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent) {
         val entry = ticket.topics.last()
-        entry.description.add(TicketMessage(event.messageIdLong, event.message.contentDisplay))
+        entry.description.add(TicketMessage(event.messageIdLong, event.message.contentDisplay, event.member?.idLong, event.member?.effectiveName))
     }
 
     override fun onReactionAdd(ticket: Ticket, event: GuildMessageReactionAddEvent) {

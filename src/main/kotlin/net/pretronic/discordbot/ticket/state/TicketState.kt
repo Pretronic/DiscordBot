@@ -28,8 +28,4 @@ interface TicketState {
     fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent)
 
     fun onReactionAdd(ticket: Ticket, event: GuildMessageReactionAddEvent)
-
-    fun nextState(ticket: Ticket) {
-        ticket.nextState()
-    }
 }

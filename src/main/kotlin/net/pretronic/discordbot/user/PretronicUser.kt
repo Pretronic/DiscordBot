@@ -36,7 +36,7 @@ class PretronicUser(val id : Int, var spigotMcId : Int, var spigotMcName : Strin
 
     fun isTeamMember(): Boolean {
         asPretronicMember()?.let { member ->
-            return member.roles.firstOrNull { it.idLong == DiscordBot.INSTANCE.config.teamRole } != null
+            return member.roles.firstOrNull { it.idLong == DiscordBot.INSTANCE.config.teamRoleId } != null
         }
         return false
     }
@@ -59,7 +59,7 @@ class PretronicUser(val id : Int, var spigotMcId : Int, var spigotMcName : Strin
         val guild = DiscordBot.INSTANCE.getPretronicGuild()
 
         asPretronicMember()?.let {
-            guild.addRoleToMember(it, DiscordBot.INSTANCE.getPretronicGuild().getRoleById(DiscordBot.INSTANCE.config.verifiedRole)!!).queue()
+            guild.addRoleToMember(it, DiscordBot.INSTANCE.getPretronicGuild().getRoleById(DiscordBot.INSTANCE.config.verifiedRoleId)!!).queue()
         }
         val member = asPretronicMember() ?: return
         resources.forEach { resource ->

@@ -1,5 +1,6 @@
 package net.pretronic.discordbot.ticket.state
 
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.pretronic.discordbot.DiscordBot

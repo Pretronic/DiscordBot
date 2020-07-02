@@ -1,5 +1,9 @@
 package net.pretronic.discordbot.ticket
 
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.TextChannel
 import net.pretronic.databasequery.api.dsl.insert
 import net.pretronic.databasequery.api.dsl.update
 import net.pretronic.discordbot.DiscordBot
@@ -9,8 +13,11 @@ import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
 import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
-import net.pretronic.libraries.utility.map.index.IndexLinkedHashMap
-import net.pretronic.libraries.utility.map.index.IndexMap
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.CompletableFuture
+import kotlin.collections.ArrayList
 
 class Ticket(val id: Int,
              val discordChannelId: Long,
@@ -38,17 +45,32 @@ class Ticket(val id: Int,
                 set("State", state.name)
                 where("Id", id)
             }.executeAsync()
+            if(value == TicketState.OPEN) {
+                logTicketAction(TicketAction.CREATE, null)
+                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+                discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
+            } else if(value == TicketState.CLOSED) {
+                close()
+            } else if(value == TicketState.PROVIDE_INFORMATION) {
+                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+            } else if(value == TicketState.TOPIC_CHOOSING) {
+                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ)
+                        ?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
+            }
         }
     val participants: MutableCollection<TicketParticipant> = participants
     val creator: TicketParticipant
         get() = participants.first { it.role == TicketParticipantRole.CREATOR }
     var topicChooseMessageId = topicChooseMessageId
         set(value) {
+            field = value
             DiscordBot.INSTANCE.storage.ticket.update {
                 set("TopicChooseMessageId", value)
                 where("Id", id)
             }.executeAsync()
         }
+    val discordChannel: TextChannel?
+        get() = DiscordBot.INSTANCE.jda.getTextChannelById(discordChannelId)
 
     fun addParticipant(participant: TicketParticipant) {
         this.participants.add(participant)
@@ -71,21 +93,70 @@ class Ticket(val id: Int,
         return participants.firstOrNull { it.role == TicketParticipantRole.CREATOR && it.discordId == discordId } != null
     }
 
-    fun nextState() {
-        when(this.state) {
-            TicketState.TOPIC_CHOOSING -> this.state = TicketState.PROVIDE_INFORMATION
-            TicketState.PROVIDE_INFORMATION -> this.state = TicketState.OPEN
-            TicketState.OPEN -> this.state = TicketState.CLOSED
+    private fun generateLog(): CompletableFuture<String> {
+        val future = CompletableFuture<String>()
+        DiscordBot.INSTANCE.getPretronicGuild().getTextChannelById(discordChannelId)?.history?.retrievePast(100)?.queue {
+            var longerHistory = false
+            if (it.isEmpty()) {
+                future.complete("Empty")
+                return@queue
+            }
+            it.reverse()
+
+            if (!it[0].author.isBot) {
+                longerHistory = true
+            }
+            val chatLog = StringBuilder()
+            if (longerHistory) {
+                chatLog.append("*** HISTORY LIMITED TO 100 MESSAGES ***").append("\n")
+            }
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+                    .withLocale(Locale.ENGLISH)
+                    .withZone(ZoneId.systemDefault())
+            for (message in it) {
+                val authorAndDate = "[" + formatter.format(message!!.timeCreated.toInstant()) + "] " + message.author.name + ": "
+                var content = message.contentDisplay
+                if (message.attachments.isNotEmpty()) {
+                    content += " [+" + message.attachments.size + " attachments uploaded]"
+                }
+                if (message.embeds.isNotEmpty()) {
+                    val embed = StringBuilder()
+                    for (messageEmbed in message.embeds) {
+                        embed.append("Embed: ").append(messageEmbed.author!!.name).append(" -> ").append(messageEmbed.description)
+                    }
+                    content += embed.toString()
+                }
+                chatLog.append(authorAndDate).append(content).append("\n")
+            }
+            future.complete(DiscordBot.INSTANCE.pasteAndGetKey(chatLog.toString()))
         }
+        return future
     }
 
-    fun close(executor: Long) {
-        this.state = TicketState.CLOSED
-        DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
-        creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
-            if(executor == creator.asMember()?.idLong) {
-                channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, mapOf(Pair("name", creator.asMember()!!.effectiveName))).queue()
+    private fun close() {
+        generateLog().thenAccept {
+            logTicketAction(TicketAction.CLOSE, it)
+            DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
+            creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
+                channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF).queue()
             }
         }
     }
+
+    private fun logTicketAction(ticketAction: TicketAction, pasteKey: String?) {
+        val builder = EmbedBuilder()
+        builder.setTitle(ticketAction.title)
+
+        creator.asMember()?.let {
+            builder.setThumbnail(it.user.effectiveAvatarUrl)
+            builder.addField("Created By", it.asMention, true)
+        }?:builder.addField("Created By", "User Left The Server", true)
+
+        builder.addField("Projects", topics.joinToString(", ") { it.topic.name }, true)
+        if(pasteKey != null) builder.addField("Transcript", pasteKey, true)
+        builder.setColor(ticketAction.color)
+
+        DiscordBot.INSTANCE.getPretronicGuild().getTextChannelById(DiscordBot.INSTANCE.config.ticketLogChannelId)?.sendMessage(builder.build())?.queue()
+    }
+
 }

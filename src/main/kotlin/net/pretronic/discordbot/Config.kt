@@ -1,6 +1,9 @@
 package net.pretronic.discordbot
 
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Category
+import net.dv8tion.jda.api.entities.Role
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
 import net.pretronic.databasequery.sql.dialect.Dialect
 import net.pretronic.databasequery.sql.driver.config.SQLDatabaseDriverConfigBuilder
@@ -27,8 +30,14 @@ class Config {
             .setPassword("<masked>")
             .build()
 
-    var verifiedRole: Long = 0
-    var teamRole: Long = 0
+    var botOnlineStatus = OnlineStatus.ONLINE
+    var botActivityType = Activity.ActivityType.WATCHING
+    var botActivityName = "https://pretronic.net"
+    var botActivityUrl: String? = "https://paste.pretronic.net"
+
+    var verifiedRoleId: Long = 0
+    var teamRoleId: Long = 0
+    @DocumentIgnored lateinit var teamRole: Role
     var guildId: Long = 0
 
     private var pendingUserVerificationExpiry = DurationProcessor.getStandard().formatShort(Duration.ofDays(7))
@@ -40,6 +49,8 @@ class Config {
     private var spigotTwoFactorAuth = "<masked>"
     @DocumentIgnored lateinit var spigotUser: User
 
+
+    var ticketLogChannelId: Long = 0
 
     var ticketCreateTextChannelId: Long = 0
     var ticketCreateMessageId: Long = 0
@@ -57,6 +68,8 @@ class Config {
 
     var languages: Collection<Language> = listOf(Language("English", "en", true, DiscordEmoji("\t\uD83C\uDDEC\uD83C\uDDE7")))
 
+    val channelAutoEmojis: Map<Long, List<DiscordEmoji>> = mapOf(Pair(0L, listOf(DiscordEmoji("\uD83D\uDC4D"), DiscordEmoji("\uD83D\uDC4E"))))
+
     fun init() : Config {
         this.pendingUserVerificationExpiryTime = DurationProcessor.getStandard().parse(pendingUserVerificationExpiry).toMillis()
         this.spigotUser = SpigotSite.getAPI().userManager.authenticate(spigotLogin, spigotPassword, spigotTwoFactorAuth)
@@ -65,6 +78,7 @@ class Config {
 
     fun jdaInit() {
         this.ticketCategory = DiscordBot.INSTANCE.jda.getCategoryById(this.ticketCategoryId)!!
+        this.teamRole = DiscordBot.INSTANCE.getPretronicGuild().getRoleById(this.teamRoleId)!!
     }
 
     fun ticketTopicByName(name: String): TicketTopic {

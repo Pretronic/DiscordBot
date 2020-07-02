@@ -1,11 +1,14 @@
 package net.pretronic.discordbot
 
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.pretronic.discordbot.extensions.addReactionById
 import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
+import net.pretronic.discordbot.ticket.state.TicketState
 
 class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
 
@@ -18,6 +21,7 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         if(event.author == discordBot.jda.selfUser) return
+        channelAutoEmojisCheck(event)
         discordBot.ticketManager.tickets.cachedObjects.forEach {
             it.state.onMessageReceive(it, event)
         }
@@ -35,11 +39,17 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         }
     }
 
+    override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
+        discordBot.ticketManager.getTicket(event.user.idLong)?.let {
+            it.state = TicketState.CLOSED
+        }
+    }
+
     private fun ticketEventExecutionAndCloseCheck(event: GuildMessageReactionAddEvent) {
-        discordBot.ticketManager.tickets.get("openMemberId", event.member.idLong)?.let {
+        discordBot.ticketManager.tickets.get("openDiscordChannelId", event.channel.idLong)?.let {
             if(event.messageIdLong == it.discordControlMessageId &&
                     discordBot.config.ticketCloseEmoji.isDiscordEmoji(event.reactionEmote)) {
-                it.close(event.userIdLong)
+                it.state = TicketState.CLOSED
             }else {
                 it.state.onReactionAdd(it, event)
             }
@@ -59,5 +69,15 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
     private fun ticketEventVerify(event: GuildMessageReactionAddEvent) {
         event.reaction.removeReaction(event.user).queue()
         discordBot.userManager.verify(event.member)
+    }
+
+    private fun channelAutoEmojisCheck(event: GuildMessageReceivedEvent) {
+        discordBot.config.channelAutoEmojis.forEach {
+            if(it.key == event.channel.idLong) {
+                it.value.forEach { emoji ->
+                    event.channel.addReactionById(event.messageIdLong, emoji)?.queue()
+                }
+            }
+        }
     }
 }

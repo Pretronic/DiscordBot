@@ -23,6 +23,11 @@ fun MessageChannel.sendMessageKey(messageKey: String): MessageAction {
     return sendMessageKey(messageKey, emptyMap())
 }
 
+fun MessageChannel.addReactionById(messageId: Long, emoji: DiscordEmoji): RestAction<Void>? {
+    if(emoji.unicode != null) return addReactionById(messageId, emoji.unicode)
+    return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { addReactionById(messageId, it) } }
+}
+
 fun Message.addReaction(emoji: DiscordEmoji): RestAction<Void>? {
     if(emoji.unicode != null) return addReaction(emoji.unicode)
     return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { addReaction(it) } }

@@ -2,11 +2,15 @@ package net.pretronic.discordbot.commands.setup
 
 import com.jagrosh.jdautilities.command.Command
 import com.jagrosh.jdautilities.command.CommandEvent
+import net.dv8tion.jda.api.Permission
 
 class SetupAddReactionCommand: Command() {
 
     init {
         name = "addReaction"
+        userPermissions = arrayOf(Permission.ADMINISTRATOR)
+        guildOnly = false
+        hidden = true
     }
 
     override fun execute(event: CommandEvent) {
