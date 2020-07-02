@@ -9,6 +9,7 @@ import net.pretronic.databasequery.api.driver.DatabaseDriverFactory
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
 import net.pretronic.discordbot.commands.GetUserIdCommand
 import net.pretronic.discordbot.commands.VerifyCommand
+import net.pretronic.discordbot.commands.setup.SetupCommand
 import net.pretronic.discordbot.message.MessageManager
 import net.pretronic.discordbot.message.language.LanguageManager
 import net.pretronic.discordbot.resource.PretronicResourceManager
@@ -22,8 +23,6 @@ import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.logging.PretronicLogger
 import net.pretronic.libraries.logging.PretronicLoggerFactory
 import net.pretronic.libraries.logging.bridge.slf4j.SLF4JStaticBridge
-import net.pretronic.libraries.logging.level.DebugLevel
-import net.pretronic.libraries.logging.level.LogLevel
 import net.pretronic.spigotsite.api.SpigotSite
 import net.pretronic.spigotsite.core.SpigotSiteCore
 import java.io.File
@@ -35,6 +34,7 @@ class DiscordBot {
     }
 
     val logger: PretronicLogger = PretronicLoggerFactory.getLogger("DiscordBot")
+
     val scheduler: TaskScheduler = SimpleTaskScheduler()
     val config : Config
     val languageManager: LanguageManager
@@ -46,6 +46,7 @@ class DiscordBot {
     val ticketManager: TicketManager
 
     init {
+        SLF4JStaticBridge.setLogger(this.logger)
         logger.info("DiscordBot starting...")
         INSTANCE = this
         SpigotSite.setAPI(SpigotSiteCore())
@@ -84,6 +85,7 @@ class DiscordBot {
 
     private fun initConfig(): Config {
         DocumentRegistry.getDefaultContext().registerAdapter(DiscordEmoji::class.java, DiscordEmoji.Adapter())
+
         DatabaseDriverConfig.registerDocumentAdapter()
         val location = File("config.yml")
         if(!location.exists()) {
@@ -99,6 +101,7 @@ class DiscordBot {
                 .setPrefix("!")
                 .addCommand(VerifyCommand(this))
                 .addCommand(GetUserIdCommand(this))
+                .addCommand(SetupCommand())
                 .setOwnerId("246659669077131264")
 
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
@@ -106,11 +109,13 @@ class DiscordBot {
                 .addEventListeners(commandClientBuilder.build(), BotListeners(this))
                 .build()
         jda.awaitReady()
+
+
         return jda
     }
 
+
     private fun initStorage() : Storage {
-        SLF4JStaticBridge.setLogger(this.logger)
         val driver = DatabaseDriverFactory.create("DiscordBot", this.config.storage, this.logger)
         driver.connect()
         return Storage(driver.getDatabase(this.config.databaseName))

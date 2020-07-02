@@ -16,7 +16,7 @@ messages:
       iconUrl: "https://i.imgur.com/84zmknE.png"
     description: "You've created a support ticket. React with :lock: or type -close to close the ticket. Ticket will automatically close after 14 days of inactivity."
     color: "RANDOM_BRIGHT"
-  discord.ticket.projectChoose:
+  discord.ticket.topicChoose:
     author:
       name: "Click to choose project"
       url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
@@ -25,3 +25,63 @@ messages:
     color: "RANDOM_BRIGHT"
   discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
   discord.ticket.closed.self: "Your ticket %name% has been closed by you."
+  discord.ticket.create:
+    author:
+      name: "Information"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/NtMrDZt.png"
+    description: ":flag_gb: English
+
+                  The Community Support is not an official support, it is only used to get fast support through the community and clarify questions. If you have a major issues or question, please contact our official support via ticket.
+
+                  If you need support for our premium resources, you must react with :white_check_mark: to verify yourself.
+
+
+                  => React in the appropriate language to open a official support ticket.
+
+
+
+                  :flag_de: German
+
+                  Der Community Support ist keine offizieller Support, dieser dient ausschliesslich um schnellen Support über die Community zu erhalten und fragen zu stellen. Sollten Sie ein grösseres Problem oder Frage haben, so wenden Sie sich bitte an unseren Offiziellen Support über Ticket.
+
+                  Sollten Sie Support für unsere Premium Resource benötigen. Müssen Sie mit :white_check_mark: reagieren, um ihren SpigotMc Account zu verifizieren
+
+
+                  => Reagiere mit der entsprechenden Sprache, um ein Support Ticket zu öffnen"
+    color: "RANDOM_BRIGHT"
+  discord.ticket.provideInformation:
+    author:
+      name: "Provide Informations for "
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/NtMrDZt.png"
+    description: "Provide us as much information as possible. Including the following points:
+
+                  :white_check_mark: A clear problem description
+                  :white_check_mark: Your server version and type (eg. Spigot / BungeeCord)
+                  :white_check_mark: Your plugin version and storage (eg. MySQL / H2)
+                  :white_check_mark: Your /plugin list
+                  :white_check_mark: Your full server log on https://hastebin.com/
+
+                  React with :arrow_right: to select another project or :white_check_mark: to complete your ticket."
+    color: "RANDOM_BRIGHT"
+  discord.ticket.provideInformation.need:
+    author:
+      name: "You need to enter Informations!"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/yqKqqTX.png"
+    color: "RANDOM_BRIGHT"
+  discord.ticket.provideInformation.finish:
+    author:
+      name: "Thanks for the information!"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+    color: "RANDOM_BRIGHT"
+    description: "A supporter will help you as soon as possible"
+    thumbnail: "https://i.imgur.com/mvuOqlq.png"
+  discord.ticket.displayInformation:
+    author:
+      name: "Topic: %topic%"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    color: "RANDOM_BRIGHT"
+    description: "%description%"

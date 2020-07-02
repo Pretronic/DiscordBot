@@ -6,8 +6,14 @@ import net.pretronic.databasequery.api.collection.field.FieldOption
 import net.pretronic.databasequery.api.datatype.DataType
 import net.pretronic.databasequery.api.dsl.createCollection
 import net.pretronic.databasequery.api.query.ForeignKey
+import net.pretronic.discordbot.ticket.topic.TicketTopic
+import net.pretronic.libraries.document.DocumentContext
 
 class Storage(database : Database) {
+
+    val topicContext = DocumentContext.newPreparedContext().apply {
+        this.registerAdapter(TicketTopic::class.java, TicketTopic.Adapter())//@Todo fix write and read
+    }
 
     val user: DatabaseCollection = database.getCollection("pretronic_user")
     val license: DatabaseCollection = database.getCollection("pretronic_license")
@@ -20,7 +26,8 @@ class Storage(database : Database) {
         field { it.name("ChannelId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
         field { it.name("Language").type(DataType.STRING).options(FieldOption.NOT_NULL) }
         field { it.name("DiscordControlMessageId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
-        field { it.name("Topics").type(DataType.STRING).defaultValue("") }
+        field { it.name("Topics").type(DataType.STRING).defaultValue("{}") }
+        field { it.name("TopicChooseMessageId").type(DataType.LONG) }
     }.create()
     val ticketParticipants = database.createCollection("pretronic_ticket_participants") {
         field { it.name("TicketId").type(DataType.INTEGER).foreignKey(ticket, "Id", ForeignKey.Option.CASCADE)

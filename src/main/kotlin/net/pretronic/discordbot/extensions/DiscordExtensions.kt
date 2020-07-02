@@ -2,10 +2,9 @@ package net.pretronic.discordbot.extensions
 
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.PrivateChannel
-import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.DiscordEmoji
 
@@ -25,6 +24,11 @@ fun MessageChannel.sendMessageKey(messageKey: String): MessageAction {
 }
 
 fun Message.addReaction(emoji: DiscordEmoji): RestAction<Void>? {
-    if(emoji.name != null) return emoji.toEmoji()?.unicode?.let { addReaction(it) }
+    if(emoji.unicode != null) return addReaction(emoji.unicode)
     return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { addReaction(it) } }
+}
+
+fun Message.retrieveReactionUsers(emoji: DiscordEmoji): ReactionPaginationAction? {
+    if(emoji.unicode != null) return retrieveReactionUsers(emoji.unicode)
+    return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { retrieveReactionUsers(it) } }
 }

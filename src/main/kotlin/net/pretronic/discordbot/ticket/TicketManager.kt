@@ -9,11 +9,16 @@ import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
+import net.pretronic.discordbot.ticket.topic.TicketTopic
+import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
 import net.pretronic.libraries.utility.Validate
+import net.pretronic.libraries.utility.map.index.IndexLinkedHashMap
+import net.pretronic.libraries.utility.map.index.IndexMap
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.ArrayList
 
 class TicketManager(private val discordBot: DiscordBot) {
 
@@ -26,8 +31,8 @@ class TicketManager(private val discordBot: DiscordBot) {
 
     fun createTicket(member: Member, language: Language): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-        val ticket = tickets.get("openMemberId", member.idLong)
-        if(ticket == null) {
+        val ticket0 = tickets.get("openMemberId", member.idLong)
+        if(ticket0 == null) {
             discordBot.config.ticketCategory.createTextChannel(language.localizedName+"-"+member.effectiveName).queue {
                 it.sendMessageKey(Messages.DISCORD_TICKET_CONTROL_MESSAGE).queue { message ->
                     message.addReaction(discordBot.config.ticketCloseEmoji)?.queue()
@@ -47,6 +52,13 @@ class TicketManager(private val discordBot: DiscordBot) {
                         set("DiscordUserId", member.idLong)
                         set("Role", TicketParticipantRole.CREATOR)
                     }.execute()
+
+                    it.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE).queue { message2 ->
+                        ticket.topicChooseMessageId = message2.idLong
+                        discordBot.config.getAccessAbleTicketTopics(member.idLong, ticket.topics).forEach { topic ->
+                            message2.addReaction(topic.emoji)?.queue()
+                        }
+                    }
 
                     future.complete(null)
                 }
@@ -92,7 +104,8 @@ class TicketManager(private val discordBot: DiscordBot) {
                         DiscordBot.INSTANCE.languageManager.getOrCreate(languageSplit[0], languageSplit[1]),
                         loadParticipants(ticketId),
                         entry.getLong("DiscordControlMessageId"),
-                        loadTopics(entry.getString("Topics")))
+                        loadTopics(entry.getString("Topics")),
+                        entry.getLong("TopicChooseMessageId"))
             }
             return null
         }
@@ -107,11 +120,10 @@ class TicketManager(private val discordBot: DiscordBot) {
             return participants
         }
 
-        private fun loadTopics(value: String): MutableCollection<TicketTopic> {
-            if(value.isEmpty() || value.isBlank()) return ArrayList()
-            val topics = ArrayList<TicketTopic>()
-            value.split(",").forEach { topics.add(DiscordBot.INSTANCE.config.ticketTopicByName(it)) }
-            return topics
+        private fun loadTopics(value: String): MutableCollection<TicketTopicContent> {
+            //return DiscordBot.INSTANCE.storage.topicContext.deserialize(Document.newDocument(), TypeReference<MutableMap<TicketTopic, Boolean>>().type)
+            //return DocumentFileType.JSON.reader.read(value).getAsObject(TypeReference<MutableMap<TicketTopic, Boolean>>().type)
+            return arrayListOf()//@Todo laoding context
         }
     }
 }

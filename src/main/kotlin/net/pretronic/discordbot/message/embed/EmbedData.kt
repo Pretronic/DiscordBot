@@ -6,7 +6,7 @@ import net.pretronic.discordbot.message.Message
 import net.pretronic.discordbot.message.Messages
 import java.awt.Color
 
-class EmbedData(val author: EmbedAuthorData?, val description: String?, private val color: String?) {
+class EmbedData(val author: EmbedAuthorData?, val description: String?, private val color: String?, val thumbnail: String?) {
 
     fun toEmbed(replacements: Map<String, String>): MessageEmbed {
         val builder = EmbedBuilder()
@@ -14,14 +14,17 @@ class EmbedData(val author: EmbedAuthorData?, val description: String?, private 
         if(author?.name != null) {
             if(author.url != null && author.iconUrl != null) {
                 builder.setAuthor(replaceContent(author.name, replacements),
-                        replaceContent(author.url, replacements),
-                        replaceContent(author.iconUrl, replacements))
+                        author.url,
+                        author.iconUrl)
             } else {
                 builder.setAuthor(replaceContent(author.name, replacements))
             }
         }
         if(description != null) {
             builder.setDescription(replaceContent(description, replacements))
+        }
+        if(thumbnail != null) {
+            builder.setThumbnail(thumbnail)
         }
         builder.setColor(buildColor())
         return builder.build()
@@ -30,7 +33,7 @@ class EmbedData(val author: EmbedAuthorData?, val description: String?, private 
     private fun buildColor(): Color {
         return when(color) {
             "RANDOM_BRIGHT" -> Messages.getRandomBrightColor()
-            else -> Color.BLACK //@Todo parse
+            else -> Color.decode(color)
         }
     }
 

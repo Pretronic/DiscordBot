@@ -1,6 +1,5 @@
 package net.pretronic.discordbot.message
 
-import net.dv8tion.jda.api.EmbedBuilder
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.message.embed.EmbedAuthorData
 import net.pretronic.discordbot.message.embed.EmbedData
@@ -11,6 +10,7 @@ import net.pretronic.libraries.document.entry.PrimitiveEntry
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.io.FileUtil
 import java.io.File
+import java.lang.IllegalArgumentException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -26,7 +26,8 @@ class MessageManager(private val discordBot: DiscordBot) {
         val language : Language = language0 ?: discordBot.languageManager.defaultLanguage
         val pack : MessagePack = packs.firstOrNull { it.language == language }?:getDefaultPack()
 
-        return pack.messages.firstOrNull { it.key == messageKey}?: getDefaultPack().messages.first { it.key == messageKey }
+        return pack.messages.firstOrNull { it.key == messageKey}?: getDefaultPack().messages.firstOrNull { it.key == messageKey }
+            ?: throw IllegalArgumentException("No message for key: $messageKey found")
     }
 
     private fun getDefaultPack() : MessagePack {
@@ -79,8 +80,9 @@ class MessageManager(private val discordBot: DiscordBot) {
                     }
                 }
                 val description = if(it.contains("description")) it.getString("description") else null
+                val thumbnail = if(it.contains("thumbnail")) it.getString("thumbnail") else null
 
-                messages.add(Message(it.key, null, EmbedData(embedAuthorData, description, it.getString("color"))))
+                messages.add(Message(it.key, null, EmbedData(embedAuthorData, description, it.getString("color"), thumbnail)))
             }
         }
         val messagePack = MessagePack(language, messages)

@@ -23,9 +23,13 @@ class Messages {
         val DISCORD_GETUSERID_SEND = "discord.getuserid.send"
         val DISCORD_GETUSERID_NOT_EXIST = "discord.getuserid.notExist"
         val DISCORD_TICKET_CONTROL_MESSAGE = "discord.ticket.controlMessage"
-        val DISCORD_TICKET_PROJECT_CHOOSE = "discord.ticket.projectChoose"
+        val DISCORD_TICKET_TOPIC_CHOOSE = "discord.ticket.topicChoose"
         val DISCORD_TICKET_ALREADY_CREATED = "discord.ticket.alreadyCreated"
         val DISCORD_TICKET_CLOSED_SELF = "discord.ticket.closed.self"
+        val DISCORD_TICKET_PROVIDE_INFORMATION = "discord.ticket.provideInformation"
+        val DISCORD_TICKET_PROVIDE_INFORMATION_NEED = "discord.ticket.provideInformation.need"
+        val DISCORD_TICKET_PROVIDE_INFORMATION_FINISH = "discord.ticket.provideInformation.finish"
+        val DISCORD_TICKET_DISPLAY_INFORMATION = "discord.ticket.displayInformation"
 
 
         fun getRandomBrightColor(): Color {

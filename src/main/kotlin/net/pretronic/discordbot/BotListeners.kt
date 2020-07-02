@@ -36,11 +36,10 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
     }
 
     private fun ticketEventExecutionAndCloseCheck(event: GuildMessageReactionAddEvent) {
-        discordBot.ticketManager.tickets.cachedObjects.forEach {
+        discordBot.ticketManager.tickets.get("openMemberId", event.member.idLong)?.let {
             if(event.messageIdLong == it.discordControlMessageId &&
                     discordBot.config.ticketCloseEmoji.isDiscordEmoji(event.reactionEmote)) {
                 it.close(event.userIdLong)
-                event.reaction.removeReaction(event.user).queue()
             }else {
                 it.state.onReactionAdd(it, event)
             }
