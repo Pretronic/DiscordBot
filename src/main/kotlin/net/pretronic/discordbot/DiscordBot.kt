@@ -98,6 +98,7 @@ class DiscordBot {
         DatabaseDriverConfig.registerDocumentAdapter()
         val location = File("configurations/config.yml")
         if(!location.exists()) {
+            File("configurations").mkdirs()
             location.createNewFile()
             DocumentFileType.YAML.writer.write(location, Document.newDocument(Config()))
         }
