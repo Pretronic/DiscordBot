@@ -21,15 +21,18 @@ spigotPassword: 'HdzouGU&Ebs&8eM90byPUiMIBjD);c'
 spigotTwoFactorAuth: 'JXVHQIFIUHZV5H27'
 ticketLogChannelId: 685585621590605929
 ticketCreateTextChannelId: 692055652041883648
-ticketCreateMessageId: 727618220797722684
+ticketCreateMessageId: 730133204933279905
 ticketVerifyOpenReactionEmoji: '✅'
 ticketTopics:
   - name: 'General'
     emoji: '🇬'
-  - name: 'Other'
-    emoji: '🇴'
-  - name: 'Extra'
-    emoji: '🇪'
+  - name: 'DKBans'
+    emoji: 693815906454732800
+  - name: 'DKCoins'
+    emoji: 693815987488686170
+  - name: 'DKPerms'
+    emoji: 693816467036045343  
+    resourceId: 1
 ticketCategoryId: 685585480339030029
 ticketCloseEmoji: '🔒'
 ticketProvideInformationFinishEmoji: '✅'
@@ -40,4 +43,6 @@ languages:
     default: true
     emoji: '🇬🇧'
 channelAutoEmojis:
+  513445161846439937: ['👍','👎']
   513445184747339787: ['👍','👎']
+  692052998213337101: ['👍','👎']
