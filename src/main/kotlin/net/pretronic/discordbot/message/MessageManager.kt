@@ -18,10 +18,6 @@ class MessageManager(private val discordBot: DiscordBot) {
 
     private val packs = ArrayList<MessagePack>()
 
-    fun getMessage(pretronicUser: PretronicUser, messageKey: String) : Message {
-        return getMessage(pretronicUser.language, messageKey)
-    }
-
     fun getMessage(language0: Language?, messageKey : String) : Message {
         val language : Language = language0 ?: discordBot.languageManager.defaultLanguage
         val pack : MessagePack = packs.firstOrNull { it.language == language }?:getDefaultPack()

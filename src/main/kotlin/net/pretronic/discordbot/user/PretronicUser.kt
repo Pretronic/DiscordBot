@@ -9,8 +9,8 @@ import net.pretronic.discordbot.resource.PretronicResource
 import java.sql.Date
 import java.sql.Timestamp
 
-class PretronicUser(val id : Int, var spigotMcId : Int, var spigotMcName : String, var discordId : Long?, var language: Language?, val key : String
-                    , val verificationTime : Date?, val created : Timestamp) {
+class PretronicUser(val id : Int, var spigotMcId : Int, var spigotMcName : String, var discordId : Long?, val key : String
+                    , val verificationTime : Timestamp?, val created : Timestamp) {
 
     val resources = ArrayList<PretronicResource>()
 

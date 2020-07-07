@@ -168,6 +168,10 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <finalName>PretronicDiscordBot</finalName>
+                            <outputDirectory>build/</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

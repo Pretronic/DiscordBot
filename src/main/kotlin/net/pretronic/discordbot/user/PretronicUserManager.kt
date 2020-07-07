@@ -35,7 +35,7 @@ class PretronicUserManager(private val discordBot: DiscordBot) {
             if (!result.isEmpty) {
                 val entry = result.first()
                 return PretronicUser(entry.getInt("Id"), entry.getInt("SpigotMcId"), entry.getString("SpigotMcName")
-                        , entry.getLong("Discord"), null, entry.getString("Key"), null, entry.getObject("Created") as Timestamp)
+                        , entry.getLong("Discord"), entry.getString("Key"), entry.getObject("Created") as Timestamp?, entry.getObject("Created") as Timestamp)
             }
             return null
         }
@@ -51,8 +51,8 @@ class PretronicUserManager(private val discordBot: DiscordBot) {
             val result: QueryResult = DiscordBot.INSTANCE.storage.user.find().where("Discord", identifiers[0]).execute()
             if (!result.isEmpty) {
                 val entry = result.first()
-                return PretronicUser(entry.getInt("Id"), entry.getInt("SpigotMcId"), entry.getString("SpigotMcName")//@Todo add language in storage
-                        , entry.getLong("Discord"), null, entry.getString("Key"), null
+                return PretronicUser(entry.getInt("Id"), entry.getInt("SpigotMcId"), entry.getString("SpigotMcName")
+                        , entry.getLong("Discord"), entry.getString("Key"), entry.getObject("Created") as Timestamp?
                         , entry.getObject("Created") as Timestamp)
             }
             return null
@@ -74,7 +74,7 @@ class PretronicUserManager(private val discordBot: DiscordBot) {
                 .set("SpigotMcName", spigotMcName)
                 .set("Key", key)
                 .set("Created", Date.valueOf(LocalDate.now())).executeAndGetGeneratedKeyAsInt("Id")
-        return PretronicUser(id, spigotMcId, spigotMcName, 0, null, key, null, Timestamp(System.currentTimeMillis()))
+        return PretronicUser(id, spigotMcId, spigotMcName, 0, key, null, Timestamp(System.currentTimeMillis()))
     }
 
     fun verify(member: Member) {

@@ -11,10 +11,6 @@ import net.pretronic.libraries.document.DocumentContext
 
 class Storage(database : Database) {
 
-    val topicContext = DocumentContext.newPreparedContext().apply {
-        this.registerAdapter(TicketTopic::class.java, TicketTopic.Adapter())//@Todo fix write and read
-    }
-
     val user: DatabaseCollection = database.getCollection("pretronic_user")
     val license: DatabaseCollection = database.getCollection("pretronic_license")
     val pendingVerification: DatabaseCollection = database.getCollection("pretronic_user_pending_verification")

@@ -13,6 +13,8 @@ import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
 import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
+import net.pretronic.libraries.document.Document
+import net.pretronic.libraries.document.type.DocumentFileType
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -46,6 +48,7 @@ class Ticket(val id: Int,
                 where("Id", id)
             }.executeAsync()
             if(value == TicketState.OPEN) {
+                updateTopics()
                 logTicketAction(TicketAction.CREATE, null)
                 creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
                 discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
@@ -83,8 +86,12 @@ class Ticket(val id: Int,
 
     fun addTopic(ticketTopic: TicketTopic) {
         this.topics.add(TicketTopicContent(ticketTopic, arrayListOf()))
+        updateTopics()
+    }
+
+    fun updateTopics() {
         DiscordBot.INSTANCE.storage.ticket.update {
-            set("Topics", "{}")//DocumentFileType.JSON.writer.write(DiscordBot.INSTANCE.storage.topicContext.serialize(topics).toDocument(), false) @Todo insert
+            set("Topics", DocumentFileType.JSON.writer.write(Document.newDocument(topics), false))
             where("Id", id)
         }.executeAsync()
     }

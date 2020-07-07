@@ -15,10 +15,11 @@ import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
+import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.Validate
+import net.pretronic.libraries.utility.reflect.TypeReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class TicketManager(private val discordBot: DiscordBot) {
 
@@ -152,9 +153,8 @@ class TicketManager(private val discordBot: DiscordBot) {
         }
 
         private fun loadTopics(value: String): MutableCollection<TicketTopicContent> {
-            //return DiscordBot.INSTANCE.storage.topicContext.deserialize(Document.newDocument(), TypeReference<MutableMap<TicketTopic, Boolean>>().type)
-            //return DocumentFileType.JSON.reader.read(value).getAsObject(TypeReference<MutableMap<TicketTopic, Boolean>>().type)
-            return arrayListOf()//@Todo laoding context
+
+            return DocumentFileType.JSON.reader.read(value).getAsObject(object : TypeReference<MutableCollection<TicketTopicContent>>() {})
         }
     }
 }
