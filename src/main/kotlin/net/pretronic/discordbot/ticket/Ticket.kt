@@ -47,18 +47,23 @@ class Ticket(val id: Int,
                 set("State", state.name)
                 where("Id", id)
             }.executeAsync()
-            if(value == TicketState.OPEN) {
-                updateTopics()
-                logTicketAction(TicketAction.CREATE, null)
-                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
-                discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
-            } else if(value == TicketState.CLOSED) {
-                close()
-            } else if(value == TicketState.PROVIDE_INFORMATION) {
-                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
-            } else if(value == TicketState.TOPIC_CHOOSING) {
-                creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ)
-                        ?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
+            when (value) {
+                TicketState.OPEN -> {
+                    updateTopics()
+                    logTicketAction(TicketAction.CREATE, null)
+                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+                    discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
+                }
+                TicketState.CLOSED -> {
+                    close()
+                }
+                TicketState.PROVIDE_INFORMATION -> {
+                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+                }
+                TicketState.TOPIC_CHOOSING -> {
+                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ)
+                            ?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
+                }
             }
         }
     val participants: MutableCollection<TicketParticipant> = participants
@@ -143,10 +148,10 @@ class Ticket(val id: Int,
     private fun close() {
         generateLog().thenAccept {
             logTicketAction(TicketAction.CLOSE, it)
-            DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
-            creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
-                channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF).queue()
-            }
+        }
+        DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
+        creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
+            channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF).queue()
         }
     }
 

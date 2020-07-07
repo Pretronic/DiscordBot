@@ -6,7 +6,9 @@ import net.pretronic.libraries.document.entry.DocumentBase
 import net.pretronic.libraries.document.entry.DocumentEntry
 import net.pretronic.libraries.document.entry.PrimitiveEntry
 import net.pretronic.libraries.document.simple.SimplePrimitiveEntry
+import net.pretronic.libraries.utility.Convert
 import net.pretronic.libraries.utility.reflect.TypeReference
+import java.lang.IllegalArgumentException
 
 class DiscordEmoji(val id: Long?, val unicode: String?) {
 
@@ -28,8 +30,12 @@ class DiscordEmoji(val id: Long?, val unicode: String?) {
 
         override fun read(base: DocumentBase, type: TypeReference<DiscordEmoji>): DiscordEmoji {
             base as PrimitiveEntry
-            if(base.asObject is Long) return DiscordEmoji(base.asLong)
-            return DiscordEmoji(base.asString)
+            try {
+                val id = Convert.toLong(base.asObject)
+                return DiscordEmoji(id)
+            } catch (exception: IllegalArgumentException) {
+                return DiscordEmoji(base.asString)
+            }
         }
     }
 }
