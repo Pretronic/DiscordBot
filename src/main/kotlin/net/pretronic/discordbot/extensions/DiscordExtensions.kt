@@ -30,7 +30,7 @@ fun MessageChannel.addReactionById(messageId: Long, emoji: DiscordEmoji): RestAc
 
 fun Message.addReaction(emoji: DiscordEmoji): RestAction<Void>? {
     if(emoji.unicode != null) return addReaction(emoji.unicode)
-    return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { addReaction(it) } }
+    return emoji.id?.let { emote -> DiscordBot.INSTANCE.jda.getEmoteById(emote)?.let { addReaction(it) } }
 }
 
 fun Message.retrieveReactionUsers(emoji: DiscordEmoji): ReactionPaginationAction? {
