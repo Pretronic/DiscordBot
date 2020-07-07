@@ -96,12 +96,12 @@ class DiscordBot {
         DocumentRegistry.getDefaultContext().registerAdapter(DiscordEmoji::class.java, DiscordEmoji.Adapter())
 
         DatabaseDriverConfig.registerDocumentAdapter()
-        val location = File("config.yml")
+        val location = File("configurations/config.yml")
         if(!location.exists()) {
             location.createNewFile()
             DocumentFileType.YAML.writer.write(location, Document.newDocument(Config()))
         }
-        val document = DocumentFileType.YAML.reader.read(File("config.yml"))
+        val document = DocumentFileType.YAML.reader.read(File("configurations/config.yml"))
         return document.getAsObject(Config::class.java).init()
     }
 
