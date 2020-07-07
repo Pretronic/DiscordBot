@@ -58,6 +58,7 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${dependency.kotlin.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -182,7 +183,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>net.pretronic.discordbot.DiscordBotBootstrap</mainClass>
+                            <mainClass>net.pretronic.discordbot.DiscordBotBootstrapKt</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
