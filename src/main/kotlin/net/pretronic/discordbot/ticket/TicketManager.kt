@@ -38,7 +38,7 @@ class TicketManager(private val discordBot: DiscordBot) {
         if (ticket0 == null) {
             discordBot.config.ticketCategory.createTextChannel(language.localizedName + "-" + member.effectiveName).queue {
                 it.upsertPermissionOverride(member).setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ).queue()
-                it.sendMessageKey(Messages.DISCORD_TICKET_CONTROL_MESSAGE).queue { message ->
+                it.sendMessageKey(Messages.DISCORD_TICKET_CONTROL_MESSAGE, language).queue { message ->
                     message.addReaction(discordBot.config.ticketCloseEmoji)?.queue()
 
                     val id = discordBot.storage.ticket.insert {
@@ -57,7 +57,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                         set("Role", TicketParticipantRole.CREATOR)
                     }.execute()
 
-                    it.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE).queue { message2 ->
+                    it.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE, language).queue { message2 ->
                         ticket.topicChooseMessageId = message2.idLong
                         discordBot.config.getAccessAbleTicketTopics(member.idLong, ticket.topics).forEach { topic ->
                             message2.addReaction(topic.emoji)?.queue()
@@ -70,7 +70,7 @@ class TicketManager(private val discordBot: DiscordBot) {
         } else {
             future.complete(null)
             member.user.openPrivateChannel().queue { channel ->
-                channel.sendMessageKey(Messages.DISCORD_TICKET_ALREADY_CREATED).queue()
+                channel.sendMessageKey(Messages.DISCORD_TICKET_ALREADY_CREATED, language).queue()
             }
         }
         return future

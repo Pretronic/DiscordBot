@@ -42,9 +42,8 @@ class Ticket(val id: Int,
 
     var state: TicketState = state
         set(value) {
-            field = value
             DiscordBot.INSTANCE.storage.ticket.update {
-                set("State", state.name)
+                set("State", value.name)
                 where("Id", id)
             }.executeAsync()
             when (value) {
@@ -65,6 +64,7 @@ class Ticket(val id: Int,
                             ?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
                 }
             }
+            field = value
         }
     val participants: MutableCollection<TicketParticipant> = participants
     val creator: TicketParticipant
@@ -146,12 +146,14 @@ class Ticket(val id: Int,
     }
 
     private fun close() {
-        generateLog().thenAccept {
-            logTicketAction(TicketAction.CLOSE, it)
+        if(state == TicketState.OPEN) {
+            generateLog().thenAccept {
+                logTicketAction(TicketAction.CLOSE, it)
+            }
         }
         DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
         creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
-            channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF).queue()
+            channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, language).queue()
         }
     }
 

@@ -25,6 +25,7 @@ import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.logging.PretronicLogger
 import net.pretronic.libraries.logging.PretronicLoggerFactory
 import net.pretronic.libraries.logging.bridge.slf4j.SLF4JStaticBridge
+import net.pretronic.libraries.logging.handler.file.FileHandler
 import net.pretronic.spigotsite.api.SpigotSite
 import net.pretronic.spigotsite.core.SpigotSiteCore
 import org.apache.http.client.HttpClient
@@ -55,6 +56,7 @@ class DiscordBot {
     val ticketManager: TicketManager
 
     init {
+        logger.addHandler(FileHandler(File("logs/")))
         SLF4JStaticBridge.setLogger(this.logger)
         logger.info("DiscordBot starting...")
         INSTANCE = this
@@ -108,6 +110,8 @@ class DiscordBot {
     private fun initJDA() : JDA {
         val commandClientBuilder = CommandClientBuilder()
                 .setPrefix("!")
+                .setStatus(config.botOnlineStatus)
+                .setActivity(Activity.of(config.botActivityType, config.botActivityName, config.botActivityUrl))
                 .addCommand(VerifyCommand(this))
                 .addCommand(GetUserIdCommand(this))
                 .addCommand(SetupCommand())
@@ -115,8 +119,6 @@ class DiscordBot {
 
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
                 .setAutoReconnect(true)
-                .setStatus(config.botOnlineStatus)
-                .setActivity(Activity.of(config.botActivityType, config.botActivityName, config.botActivityUrl))
                 .addEventListeners(commandClientBuilder.build(), BotListeners(this))
                 .build()
         jda.awaitReady()

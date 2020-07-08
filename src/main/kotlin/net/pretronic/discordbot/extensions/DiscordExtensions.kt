@@ -7,20 +7,29 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.DiscordEmoji
+import net.pretronic.discordbot.message.language.Language
 
-fun MessageChannel.sendMessageKey(messageKey: String, replacements: Map<String, String>): MessageAction {
-    val message0 = DiscordBot.INSTANCE.messageManager.getMessage(null, messageKey)
-    if(message0.content != null) {
+fun MessageChannel.sendMessageKey(messageKey: String, language: Language?, replacements: Map<String, String>): MessageAction {
+    val message0 = DiscordBot.INSTANCE.messageManager.getMessage(language, messageKey)
+    return if(message0.content != null) {
         var message: String = message0.content
         replacements.forEach { message = message.replace("%${it.key}%", it.value) }
-        return sendMessage(message)
+        sendMessage(message)
     } else {
-        return sendMessage(message0.buildEmbed(replacements)!!)
+        sendMessage(message0.buildEmbed(replacements)!!)
     }
+}
+
+fun MessageChannel.sendMessageKey(messageKey: String, replacements: Map<String, String>): MessageAction {
+    return sendMessageKey(messageKey, null, replacements)
 }
 
 fun MessageChannel.sendMessageKey(messageKey: String): MessageAction {
     return sendMessageKey(messageKey, emptyMap())
+}
+
+fun MessageChannel.sendMessageKey(messageKey: String, language: Language?): MessageAction {
+    return sendMessageKey(messageKey, language, emptyMap())
 }
 
 fun MessageChannel.addReactionById(messageId: Long, emoji: DiscordEmoji): RestAction<Void>? {

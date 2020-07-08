@@ -66,7 +66,8 @@ class Config {
 
 
 
-    var languages: Collection<Language> = listOf(Language("English", "en", true, DiscordEmoji("\t\uD83C\uDDEC\uD83C\uDDE7")))
+    var languages: Collection<Language> = listOf(Language("English", "en", true, DiscordEmoji("\t\uD83C\uDDEC\uD83C\uDDE7"))
+            , Language("Deutsch", "de", false, DiscordEmoji("\uD83C\uDDE9\uD83C\uDDEA")))
 
     val channelAutoEmojis: Map<Long, List<DiscordEmoji>> = mapOf(Pair(0L, listOf(DiscordEmoji("\uD83D\uDC4D"), DiscordEmoji("\uD83D\uDC4E"))))
 

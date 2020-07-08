@@ -27,7 +27,7 @@ class ProvideInformationTicketState: TicketState {
             if(checkInformationInput(ticket, event)){
                 clearAndDisplayTopicDescription(ticket, event)
 
-                event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_FINISH)
+                event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_FINISH, ticket.language)
                         .delay(Duration.ofSeconds(60))
                         .flatMap(Message::delete)
                         .queue()
@@ -37,7 +37,7 @@ class ProvideInformationTicketState: TicketState {
             if(checkInformationInput(ticket, event)) {
                 clearAndDisplayTopicDescription(ticket, event)
 
-                event.channel.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE).queue { message2 ->
+                event.channel.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE, ticket.language).queue { message2 ->
                     ticket.topicChooseMessageId = message2.idLong
                     DiscordBot.INSTANCE.config.getAccessAbleTicketTopics(event.userIdLong, ticket.topics).forEach { topic ->
                         message2.addReaction(topic.emoji)?.queue()
@@ -59,13 +59,14 @@ class ProvideInformationTicketState: TicketState {
         val descriptionBuilder = StringBuilder()
         content.description.forEach { descriptionBuilder.append(it.content).append("\n") }
 
-        event.channel.sendMessageKey(Messages.DISCORD_TICKET_DISPLAY_INFORMATION, mapOf(Pair("topic", content.topic.name), Pair("description", descriptionBuilder.toString()))).queue()
+        event.channel.sendMessageKey(Messages.DISCORD_TICKET_DISPLAY_INFORMATION, ticket.language,
+                mapOf(Pair("topic", content.topic.name), Pair("description", descriptionBuilder.toString()))).queue()
     }
 
     private fun checkInformationInput(ticket: Ticket, event: GuildMessageReactionAddEvent): Boolean {
         if(ticket.topics.last().description.isEmpty()) {
             event.reaction.removeReaction(event.user).queue()
-            event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_NEED)
+            event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_NEED, ticket.language)
                     .delay(Duration.ofSeconds(5))
                     .flatMap(Message::delete)
                     .queue()
