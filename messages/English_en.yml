@@ -1,6 +1,6 @@
 messages:
   command.verify.start: "In order to authenticate yourself with your SpigotMc account please click the following link
-  \n https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
+  https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
   command.verify.already: "Your account is already verified or there is already an open verification request."
   account.verified.failed: "Invalid authentication key or your account is already verified."
   account.verified.discord: "Your Discord account is now successfully linked to your SpigotMc account (%spigotMcUser%)"
@@ -31,24 +31,23 @@ messages:
       url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
       iconUrl: "https://i.imgur.com/NtMrDZt.png"
     description: ":flag_gb: English
+    The Community Support is not an official support, it is only used to get fast support through the community and clarify questions. If you have a major issues or question, please contact our official support via ticket.
 
-                  The Community Support is not an official support, it is only used to get fast support through the community and clarify questions. If you have a major issues or question, please contact our official support via ticket.
-
-                  If you need support for our premium resources, you must react with :white_check_mark: to verify yourself.
-
-
-                  => React in the appropriate language to open a official support ticket.
+    If you need support for our premium resources, you must react with :white_check_mark: to verify yourself.
 
 
-
-                  :flag_de: German
-
-                  Der Community Support ist keine offizieller Support, dieser dient ausschliesslich um schnellen Support über die Community zu erhalten und fragen zu stellen. Sollten Sie ein grösseres Problem oder Frage haben, so wenden Sie sich bitte an unseren Offiziellen Support über Ticket.
-
-                  Sollten Sie Support für unsere Premium Resource benötigen. Müssen Sie mit :white_check_mark: reagieren, um ihren SpigotMc Account zu verifizieren
+    => React in the appropriate language to open a official support ticket.
 
 
-                  => Reagiere mit der entsprechenden Sprache, um ein Support Ticket zu öffnen"
+
+    :flag_de: German
+
+    Der Community Support ist keine offizieller Support, dieser dient ausschliesslich um schnellen Support über die Community zu erhalten und fragen zu stellen. Sollten Sie ein grösseres Problem oder Frage haben, so wenden Sie sich bitte an unseren Offiziellen Support über Ticket.
+
+    Sollten Sie Support für unsere Premium Resource benötigen. Müssen Sie mit :white_check_mark: reagieren, um ihren SpigotMc Account zu verifizieren
+
+
+    => Reagiere mit der entsprechenden Sprache, um ein Support Ticket zu öffnen"
     color: "RANDOM_BRIGHT"
   discord.ticket.provideInformation:
     author:
@@ -57,13 +56,13 @@ messages:
       iconUrl: "https://i.imgur.com/NtMrDZt.png"
     description: "Provide us as much information as possible. Including the following points:
 
-                  :white_check_mark: A clear problem description
-                  :white_check_mark: Your server version and type (eg. Spigot / BungeeCord)
-                  :white_check_mark: Your plugin version and storage (eg. MySQL / H2)
-                  :white_check_mark: Your /plugin list
-                  :white_check_mark: Your full server log on https://paste.pretronic.net/
+    :white_check_mark: A clear problem description
+    :white_check_mark: Your server version and type (eg. Spigot / BungeeCord)
+    :white_check_mark: Your plugin version and storage (eg. MySQL / H2)
+    :white_check_mark: Your /plugin list
+    :white_check_mark: Your full server log on https://paste.pretronic.net/
 
-                  React with :arrow_right: to select another project or :white_check_mark: to complete your ticket."
+    React with :arrow_right: to select another project or :white_check_mark: to complete your ticket."
     color: "RANDOM_BRIGHT"
   discord.ticket.provideInformation.need:
     author:

@@ -153,7 +153,6 @@ class TicketManager(private val discordBot: DiscordBot) {
         }
 
         private fun loadTopics(value: String): MutableCollection<TicketTopicContent> {
-
             return DocumentFileType.JSON.reader.read(value).getAsObject(object : TypeReference<MutableCollection<TicketTopicContent>>() {})
         }
     }

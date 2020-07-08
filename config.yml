@@ -24,8 +24,6 @@ ticketCreateTextChannelId: 692055652041883648
 ticketCreateMessageId: 730133204933279905
 ticketVerifyOpenReactionEmoji: '✅'
 ticketTopics:
-  - name: 'General'
-    emoji: '🇬'
   - name: 'DKBans'
     emoji: 693815906454732800
   - name: 'DKCoins'
@@ -33,6 +31,8 @@ ticketTopics:
   - name: 'DKPerms'
     emoji: 693816467036045343  
     resourceId: 1
+  - name: 'General'
+    emoji: '🇬'
 ticketCategoryId: 685585480339030029
 ticketCloseEmoji: '🔒'
 ticketProvideInformationFinishEmoji: '✅'

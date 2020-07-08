@@ -55,7 +55,7 @@ class Config {
     var ticketCreateTextChannelId: Long = 0
     var ticketCreateMessageId: Long = 0
     var ticketVerifyOpenReactionEmoji = DiscordEmoji("✅")
-    var ticketTopics: Collection<TicketTopic> = listOf(TicketTopic("General", DiscordEmoji("\uD83C\uDDEC"), null))
+    var ticketTopics: List<TicketTopic> = listOf(TicketTopic("General", DiscordEmoji("\uD83C\uDDEC"), null))
 
     private var ticketCategoryId: Long = 0
     @DocumentIgnored lateinit var ticketCategory: Category

@@ -96,7 +96,7 @@ class Ticket(val id: Int,
 
     fun updateTopics() {
         DiscordBot.INSTANCE.storage.ticket.update {
-            set("Topics", DocumentFileType.JSON.writer.write(Document.newDocument(topics), false))
+            set("Topics", DocumentFileType.JSON.writer.write(Document.newDocument().add("topics", topics), false))
             where("Id", id)
         }.executeAsync()
     }
