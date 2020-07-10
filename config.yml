@@ -3,7 +3,7 @@ databaseName: 'pretronic'
 storage:
   address: 'deyna.ch:9877'
   username: 'discordbot'
-  password: 'EoU)tRHzNTy9s8CnE49zI2IHr35hJU'
+  password: '7nNjvY5v7v,ks59RruSZSzXg#U'
   driver: 'net.pretronic.databasequery.sql.driver.SQLDatabaseDriver'
   name: 'SQL Pool-1'
   dialectName: 'MariaDB'
