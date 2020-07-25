@@ -73,7 +73,7 @@ class Config {
 
     fun init() : Config {
         this.pendingUserVerificationExpiryTime = DurationProcessor.getStandard().parse(pendingUserVerificationExpiry).toMillis()
-        this.spigotUser = SpigotSite.getAPI().userManager.authenticate(spigotLogin, spigotPassword, spigotTwoFactorAuth)
+        //this.spigotUser = SpigotSite.getAPI().userManager.authenticate(spigotLogin, spigotPassword, spigotTwoFactorAuth)
         return this
     }
 

@@ -18,7 +18,7 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
                     , entry.getInt("SpigotMcResourceId"), entry.getBoolean("Licensed")))
         }
 
-        startResourceSynchronizer()
+        //startResourceSynchronizer()
         return this
     }
 
@@ -31,7 +31,7 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
     }
 
     fun startResourceSynchronizer() {
-        discordBot.scheduler.createTask(ObjectOwner.SYSTEM)
+        /*discordBot.scheduler.createTask(ObjectOwner.SYSTEM)
                 .interval(1, TimeUnit.MINUTES)
                 .delay(30, TimeUnit.SECONDS)
                 .async()
@@ -49,6 +49,6 @@ class PretronicResourceManager(val discordBot: DiscordBot) {
                             }
                         }
                     }
-                }
+                }*/
     }
 }

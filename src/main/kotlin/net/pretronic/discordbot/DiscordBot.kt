@@ -60,7 +60,7 @@ class DiscordBot {
         SLF4JStaticBridge.setLogger(this.logger)
         logger.info("DiscordBot starting...")
         INSTANCE = this
-        SpigotSite.setAPI(SpigotSiteCore())
+        //SpigotSite.setAPI(SpigotSiteCore())
 
         this.config = initConfig()
 
@@ -76,7 +76,7 @@ class DiscordBot {
         this.resourceManager = PretronicResourceManager(this).init()
 
         this.userManager = PretronicUserManager(this)
-        this.userManager.startConversationProcessor()
+        //this.userManager.startConversationProcessor()
 
         this.ticketManager = TicketManager(this)
 

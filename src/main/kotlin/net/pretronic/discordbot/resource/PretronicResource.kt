@@ -7,7 +7,7 @@ import net.pretronic.spigotsite.api.resource.Resource
 
 class PretronicResource(val id: Int, val publicId: String, val name: String, val spigotMcResourceId: Int, val licensed: Boolean) {
 
-    val spigotResource: Resource? = if(spigotMcResourceId > 0) SpigotSite.getAPI().resourceManager.getResourceById(spigotMcResourceId, DiscordBot.INSTANCE.config.spigotUser) else null
+    //val spigotResource: Resource? = if(spigotMcResourceId > 0) SpigotSite.getAPI().resourceManager.getResourceById(spigotMcResourceId, DiscordBot.INSTANCE.config.spigotUser) else null
     private var discordRoleId: Long? = null
 
     fun getDiscordRole(): Role? {
