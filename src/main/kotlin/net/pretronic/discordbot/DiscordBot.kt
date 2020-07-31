@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.pretronic.databasequery.api.driver.DatabaseDriverFactory
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
 import net.pretronic.discordbot.commands.GetUserIdCommand
@@ -120,6 +121,7 @@ class DiscordBot {
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
                 .setAutoReconnect(true)
                 .addEventListeners(commandClientBuilder.build(), BotListeners(this))
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build()
         jda.awaitReady()
 
