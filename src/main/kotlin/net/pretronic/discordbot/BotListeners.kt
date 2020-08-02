@@ -23,7 +23,9 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         if(event.author == discordBot.jda.selfUser) return
         channelAutoEmojisCheck(event)
         discordBot.ticketManager.tickets.cachedObjects.forEach {
-            it.state.onMessageReceive(it, event)
+            if(it.discordChannelId == event.channel.idLong && it.creator.discordId == event.author.idLong) {
+                it.state.onMessageReceive(it, event)
+            }
         }
     }
 
