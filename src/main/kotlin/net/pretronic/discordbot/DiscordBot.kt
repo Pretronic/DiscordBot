@@ -4,7 +4,6 @@ import com.jagrosh.jdautilities.command.CommandClientBuilder
 import io.sentry.Sentry
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -25,16 +24,13 @@ import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.DocumentRegistry
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.logging.PretronicLogger
-import net.pretronic.libraries.logging.PretronicLoggerFactory
-import net.pretronic.libraries.logging.bridge.slf4j.SLF4JStaticBridge
-import net.pretronic.libraries.logging.handler.file.FileHandler
-import net.pretronic.spigotsite.api.SpigotSite
-import net.pretronic.spigotsite.core.SpigotSiteCore
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -43,9 +39,8 @@ class DiscordBot {
 
     companion object {
         lateinit var INSTANCE : DiscordBot
+        val logger: Logger = LoggerFactory.getLogger(DiscordBot::class.java)
     }
-
-    val logger: PretronicLogger = PretronicLoggerFactory.getLogger("DiscordBot")
 
     val scheduler: TaskScheduler = SimpleTaskScheduler()
     val config : Config
@@ -58,9 +53,10 @@ class DiscordBot {
     val ticketManager: TicketManager
 
     init {
-        logger.addHandler(FileHandler(File("logs/")))
         //SLF4JStaticBridge.setLogger(this.logger)
         Sentry.init("https://e3c0db053f984827a8618609fd024dfb@o428820.ingest.sentry.io/5374871");
+
+
         logger.info("DiscordBot starting...")
         INSTANCE = this
         //SpigotSite.setAPI(SpigotSiteCore())
@@ -132,7 +128,7 @@ class DiscordBot {
     }
 
     private fun initStorage() : Storage {
-        val driver = DatabaseDriverFactory.create("DiscordBot", this.config.storage, this.logger)
+        val driver = DatabaseDriverFactory.create("DiscordBot", this.config.storage)
         driver.connect()
         return Storage(driver.getDatabase(this.config.databaseName))
     }

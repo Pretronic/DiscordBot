@@ -47,7 +47,7 @@ class MessageManager(private val discordBot: DiscordBot) {
             val language = discordBot.languageManager.getOrCreate(splitted[0], splitted[1])
             loadPack(language, DocumentFileType.YAML.reader.read(it))
         }
-        discordBot.logger.info("Loaded ${this.packs.size} packs")
+        DiscordBot.logger.info("Loaded ${this.packs.size} packs")
     }
 
     private fun loadPack(language: Language, document : Document) {
