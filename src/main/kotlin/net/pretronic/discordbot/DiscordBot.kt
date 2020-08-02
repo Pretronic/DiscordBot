@@ -1,6 +1,7 @@
 package net.pretronic.discordbot
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder
+import io.sentry.Sentry
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
@@ -58,7 +59,8 @@ class DiscordBot {
 
     init {
         logger.addHandler(FileHandler(File("logs/")))
-        SLF4JStaticBridge.setLogger(this.logger)
+        //SLF4JStaticBridge.setLogger(this.logger)
+        Sentry.init("https://e3c0db053f984827a8618609fd024dfb@o428820.ingest.sentry.io/5374871");
         logger.info("DiscordBot starting...")
         INSTANCE = this
         //SpigotSite.setAPI(SpigotSiteCore())
