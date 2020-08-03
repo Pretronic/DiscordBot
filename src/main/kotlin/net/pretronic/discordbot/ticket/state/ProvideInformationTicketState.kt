@@ -11,6 +11,7 @@ import net.pretronic.discordbot.ticket.Ticket
 import net.pretronic.discordbot.ticket.TicketMessage
 import java.lang.StringBuilder
 import java.time.Duration
+import java.util.function.Consumer
 
 class ProvideInformationTicketState: TicketState {
 
@@ -30,7 +31,7 @@ class ProvideInformationTicketState: TicketState {
                 event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_FINISH, ticket.language)
                         .delay(Duration.ofSeconds(60))
                         .flatMap(Message::delete)
-                        .queue()
+                        .queue({  }, { /*@Todo ignored*/ })
                 ticket.state = TicketState.OPEN
             }
         } else if(config.ticketProvideInformationNextTopicEmoji.isDiscordEmoji(event.reactionEmote)) {
