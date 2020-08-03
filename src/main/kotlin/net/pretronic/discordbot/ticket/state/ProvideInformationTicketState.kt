@@ -31,7 +31,7 @@ class ProvideInformationTicketState: TicketState {
                 event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION_FINISH, ticket.language)
                         .delay(Duration.ofSeconds(60))
                         .flatMap(Message::delete)
-                        .queue({  }, { /*@Todo ignored*/ })
+                        .queue({  }, { /*ignored*/ })
                 ticket.state = TicketState.OPEN
             }
         } else if(config.ticketProvideInformationNextTopicEmoji.isDiscordEmoji(event.reactionEmote)) {
