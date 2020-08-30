@@ -78,7 +78,7 @@ class PretronicUserManager(private val discordBot: DiscordBot) {
     }
 
     fun verify(member: Member) {
-        /*if(discordBot.userManager.getUserByDiscord(member.idLong) == null) {
+        if(discordBot.userManager.getUserByDiscord(member.idLong) == null) {
             val pendingUserVerification = discordBot.userManager.createPendingVerificationUser(member.idLong)
             member.user.openPrivateChannel().queue {
                 it.sendMessageKey(Messages.COMMAND_VERIFY_START, mapOf(Pair("secret", pendingUserVerification.secret))).queue()
@@ -87,7 +87,7 @@ class PretronicUserManager(private val discordBot: DiscordBot) {
             member.user.openPrivateChannel().queue {
                 it.sendMessageKey(Messages.COMMAND_VERIFY_ALREADY).queue()
             }
-        }*/
+        }
     }
 
     fun createPendingVerificationUser(discordId : Long) : PendingUserVerification {
