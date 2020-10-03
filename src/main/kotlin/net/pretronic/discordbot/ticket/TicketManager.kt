@@ -136,7 +136,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                         DiscordBot.INSTANCE.languageManager.getOrCreate(languageSplit[0], languageSplit[1]),
                         loadParticipants(ticketId),
                         entry.getLong("DiscordControlMessageId"),
-                        loadTopics(entry.getString("Topics")),
+                        arrayListOf(),
                         entry.getLong("TopicChooseMessageId"))
             }
             return null
@@ -150,10 +150,6 @@ class TicketManager(private val discordBot: DiscordBot) {
                 participants.add(TicketParticipant(it.getLong("DiscordUserId"), TicketParticipantRole.parse(it.getString("Role"))))
             }
             return participants
-        }
-
-        private fun loadTopics(value: String): MutableCollection<TicketTopicContent> {
-            return DocumentFileType.JSON.reader.read(value).getAsObject(object : TypeReference<MutableCollection<TicketTopicContent>>() {})
         }
     }
 }

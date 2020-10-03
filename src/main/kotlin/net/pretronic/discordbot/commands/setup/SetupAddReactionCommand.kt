@@ -25,9 +25,9 @@ class SetupAddReactionCommand: Command() {
 
         event.textChannel.retrieveMessageById(messageId).queue {
             if(split[1].toLongOrNull() != null) {
-                it.addReaction(event.jda.getEmoteById(split[1].toLong())!!).queue()
+                it.addReaction(event.jda.getEmoteById(split[1].toLong())!!).queue({},{/*Ignored*/})
             } else {
-                it.addReaction(split[1]).queue()
+                it.addReaction(split[1]).queue({},{/*Ignored*/})
             }
         }
 

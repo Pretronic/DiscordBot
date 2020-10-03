@@ -77,7 +77,7 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         discordBot.config.channelAutoEmojis.forEach {
             if(it.key == event.channel.idLong) {
                 it.value.forEach { emoji ->
-                    event.channel.addReactionById(event.messageIdLong, emoji)?.queue()
+                    event.channel.addReactionById(event.messageIdLong, emoji)?.queue({},{/*Ignored*/})
                 }
             }
         }

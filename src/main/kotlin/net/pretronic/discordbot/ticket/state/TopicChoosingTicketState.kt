@@ -23,11 +23,11 @@ class TopicChoosingTicketState : TicketState {
             if(it.emoji.isDiscordEmoji(event.reactionEmote)) {
                 ticket.addTopic(it)
                 event.channel.deleteMessageById(event.messageIdLong).queue()
-                event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION, ticket.language).queue { message ->
+                event.channel.sendMessageKey(Messages.DISCORD_TICKET_PROVIDE_INFORMATION, ticket.language, mapOf(Pair("project", it.name))).queue { message ->
                     message.addReaction(DiscordBot.INSTANCE.config.ticketProvideInformationFinishEmoji)?.queue {
                         val topics = config.getAccessAbleTicketTopics(event.userIdLong, ticket.topics)
                         if(topics.isNotEmpty()) {
-                            message.addReaction(DiscordBot.INSTANCE.config.ticketProvideInformationNextTopicEmoji)?.queue()
+                            message.addReaction(DiscordBot.INSTANCE.config.ticketProvideInformationNextTopicEmoji)?.queue({},{/*Ignored*/})
                         }
                     }
                 }

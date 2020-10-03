@@ -22,7 +22,6 @@ class Storage(database : Database) {
         field { it.name("ChannelId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
         field { it.name("Language").type(DataType.STRING).options(FieldOption.NOT_NULL) }
         field { it.name("DiscordControlMessageId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
-        field { it.name("Topics").type(DataType.STRING).defaultValue("{}") }
         field { it.name("TopicChooseMessageId").type(DataType.LONG) }
     }.create()
     val ticketParticipants = database.createCollection("pretronic_ticket_participants") {

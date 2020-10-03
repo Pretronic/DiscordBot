@@ -41,6 +41,7 @@ class MessageManager(private val discordBot: DiscordBot) {
         }
         if(messagesPath.listFiles().isEmpty()) {
             Files.copy(this::class.java.getResourceAsStream("/messages/English_en.yml"), Paths.get("messages/English_en.yml"))
+            Files.copy(this::class.java.getResourceAsStream("/messages/Deutsch_de.yml"), Paths.get("messages/Deutsch_de.yml"))
         }
         FileUtil.processFilesHierarchically(messagesPath) {
             val splitted = it.nameWithoutExtension.split("_")

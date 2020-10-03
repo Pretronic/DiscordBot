@@ -51,7 +51,7 @@ messages:
     color: "RANDOM_BRIGHT"
   discord.ticket.provideInformation:
     author:
-      name: "Provide information for "
+      name: "Provide information for %project%"
       url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
       iconUrl: "https://i.imgur.com/NtMrDZt.png"
     description: "Provide us as much information as possible. Including the following points:
