@@ -1,5 +1,6 @@
 package net.pretronic.discordbot.ticket
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.pretronic.databasequery.api.dsl.find
@@ -17,6 +18,7 @@ import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.Validate
+import net.pretronic.libraries.utility.interfaces.ObjectOwner
 import net.pretronic.libraries.utility.reflect.TypeReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -30,6 +32,7 @@ class TicketManager(private val discordBot: DiscordBot) {
         tickets.setExpireAfterAccess(60, TimeUnit.MINUTES)
         tickets.registerQuery("openDiscordUserId", CloseDiscordUserIdQuery())
         tickets.registerQuery("openDiscordChannelId", DiscordChannelIdQuery())
+        startTicketOpenNotifier()
     }
 
     fun createTicket(member: Member, language: Language): CompletableFuture<Void> {
@@ -48,7 +51,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                         set("DiscordControlMessageId", message.idLong)
                     }.executeAndGetGeneratedKeyAsInt("Id")
 
-                    val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong)
+                    val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong, System.currentTimeMillis())
                     ticket.state.handleChange(ticket)
                     tickets.insert(ticket)
 
@@ -79,6 +82,22 @@ class TicketManager(private val discordBot: DiscordBot) {
 
     fun getTicket(discordUserId: Long): Ticket? {
         return tickets.get("openDiscordUserId", discordUserId)
+    }
+
+    private fun startTicketOpenNotifier() {
+        discordBot.scheduler.createTask(ObjectOwner.SYSTEM)
+                .async()
+                .interval(3, TimeUnit.MINUTES)
+                .delay(30, TimeUnit.SECONDS)
+                .execute {
+                    tickets.cachedObjects.forEach {
+                        if(it.state != TicketState.OPEN && it.creationTime+TimeUnit.MINUTES.toMillis(20) < System.currentTimeMillis()
+                                && (it.lastNotOpenedNotifyTime == -1L || it.lastNotOpenedNotifyTime+TimeUnit.MINUTES.toMillis(20) < System.currentTimeMillis())) {
+                            it.lastNotOpenedNotifyTime = System.currentTimeMillis()
+                            it.discordChannel?.sendMessageKey(Messages.DISCORD_TICKET_NOT_OPENED_NOTIFY, it.language, mapOf(Pair("creator", it.creator.asMember()?.asMention?:"ERROR")))?.queue()
+                        }
+                    }
+                }
     }
 
     private class CloseDiscordUserIdQuery : CacheQuery<Ticket> {
@@ -138,7 +157,8 @@ class TicketManager(private val discordBot: DiscordBot) {
                         loadParticipants(ticketId),
                         entry.getLong("DiscordControlMessageId"),
                         arrayListOf(),
-                        entry.getLong("TopicChooseMessageId"))
+                        entry.getLong("TopicChooseMessageId"),
+                        entry.getLong("CreationTime"))
             }
             return null
         }

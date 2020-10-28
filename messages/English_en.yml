@@ -84,3 +84,6 @@ messages:
       iconUrl: "https://i.imgur.com/84zmknE.png"
     color: "RANDOM_BRIGHT"
     description: "%description%"
+  discord.ticket.notOpenedNotify:
+    description: "Your ticket is not opened. Please check the ticket creation description and click on the ✅ emoji to open the ticket or provide us information."
+    color: "RANDOM_BRIGHT"

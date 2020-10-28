@@ -30,6 +30,7 @@ class Messages {
         val DISCORD_TICKET_PROVIDE_INFORMATION_NEED = "discord.ticket.provideInformation.need"
         val DISCORD_TICKET_PROVIDE_INFORMATION_FINISH = "discord.ticket.provideInformation.finish"
         val DISCORD_TICKET_DISPLAY_INFORMATION = "discord.ticket.displayInformation"
+        val DISCORD_TICKET_NOT_OPENED_NOTIFY = "discord.ticket.notOpenedNotify"
 
 
         fun getRandomBrightColor(): Color {

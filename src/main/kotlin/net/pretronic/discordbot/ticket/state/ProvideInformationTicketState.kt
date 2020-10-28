@@ -10,9 +10,7 @@ import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.ticket.Ticket
 import net.pretronic.discordbot.ticket.TicketMessage
-import java.lang.StringBuilder
 import java.time.Duration
-import java.util.function.Consumer
 
 class ProvideInformationTicketState: TicketState {
 
@@ -23,6 +21,7 @@ class ProvideInformationTicketState: TicketState {
     }
 
     override fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent) {
+        if(event.member != ticket.creator.asMember()) return
         val entry = ticket.topics.last()
         entry.description.add(TicketMessage(event.messageIdLong, event.message.contentDisplay, event.member?.idLong, event.member?.effectiveName))
     }

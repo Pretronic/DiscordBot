@@ -20,17 +20,19 @@ class Ticket(val id: Int,
              participants: MutableCollection<TicketParticipant>,
              val discordControlMessageId: Long,
              val topics: MutableCollection<TicketTopicContent>,
-             topicChooseMessageId: Long?) {
+             topicChooseMessageId: Long?,
+             val creationTime: Long) {
 
     constructor(id: Int,
                 discordChannelId: Long,
                 state: TicketState,
                 language: Language,
                 creatorId: Long,
-                discordControlMessageId: Long) :
+                discordControlMessageId: Long,
+                creationTime: Long) :
             this(id, discordChannelId, state, language,
                     mutableListOf(TicketParticipant(creatorId, TicketParticipantRole.CREATOR)),
-                    discordControlMessageId, ArrayList(), null)
+                    discordControlMessageId, ArrayList(), null, creationTime)
 
     var state: TicketState = state
         set(value) {
@@ -54,6 +56,8 @@ class Ticket(val id: Int,
         }
     val discordChannel: TextChannel?
         get() = DiscordBot.INSTANCE.jda.getTextChannelById(discordChannelId)
+
+    var lastNotOpenedNotifyTime: Long = -1
 
     fun addParticipant(participant: TicketParticipant) {
         this.participants.add(participant)
