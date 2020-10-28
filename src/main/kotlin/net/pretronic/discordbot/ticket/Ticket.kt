@@ -38,24 +38,8 @@ class Ticket(val id: Int,
                 set("State", value.name)
                 where("Id", id)
             }.executeAsync()
-            when (value) {
-                TicketState.OPEN -> {
-                    logTicketAction(TicketAction.CREATE, null)
-                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
-                    discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
-                }
-                TicketState.CLOSED -> {
-                    close()
-                }
-                TicketState.PROVIDE_INFORMATION -> {
-                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
-                }
-                TicketState.TOPIC_CHOOSING -> {
-                    creator.asMember()?.let { discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ)
-                            ?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
-                }
-            }
             field = value
+            value.handleChange(this)
         }
     val participants: MutableCollection<TicketParticipant> = participants
     val creator: TicketParticipant
@@ -88,14 +72,14 @@ class Ticket(val id: Int,
         return participants.firstOrNull { it.role == TicketParticipantRole.CREATOR && it.discordId == discordId } != null
     }
 
-    private fun close() {
+    fun close() {
         DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
         creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
             channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, language).queue()
         }
     }
 
-    private fun logTicketAction(ticketAction: TicketAction, pasteKey: String?) {
+    fun logTicketAction(ticketAction: TicketAction, pasteKey: String?) {
         val builder = EmbedBuilder()
         builder.setTitle(ticketAction.title)
 

@@ -1,5 +1,6 @@
 package net.pretronic.discordbot.ticket.state
 
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
@@ -16,6 +17,10 @@ import java.util.function.Consumer
 class ProvideInformationTicketState: TicketState {
 
     override val name: String = "ProvideInformation"
+
+    override fun handleChange(ticket: Ticket) {
+        ticket.creator.asMember()?.let { ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+    }
 
     override fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent) {
         val entry = ticket.topics.last()

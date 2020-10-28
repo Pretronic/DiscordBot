@@ -49,6 +49,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                     }.executeAndGetGeneratedKeyAsInt("Id")
 
                     val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong)
+                    ticket.state.handleChange(ticket)
                     tickets.insert(ticket)
 
                     discordBot.storage.ticketParticipants.insert {

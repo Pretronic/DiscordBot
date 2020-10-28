@@ -8,6 +8,11 @@ class ClosedTicketState: TicketState {
 
     override val name: String = "Closed"
 
+
+    override fun handleChange(ticket: Ticket) {
+        ticket.close()
+    }
+
     override fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent) {
 
     }
