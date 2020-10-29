@@ -159,7 +159,8 @@ class TicketManager(private val discordBot: DiscordBot) {
                 val entry = result.first()
                 val languageSplit = entry.getString("Language").split("_")
 
-
+                var ticketNotOpenedNotificationMessages = DocumentFileType.JSON.reader.read(entry.getString("TicketNotOpenedNotificationMessages")).getObject("value", object : TypeReference<MutableCollection<Long>>() {})
+                if(ticketNotOpenedNotificationMessages == null) ticketNotOpenedNotificationMessages = arrayListOf()
                 val ticketId = entry.getInt("Id")
                 return Ticket(ticketId,
                         entry.getLong("ChannelId"),
@@ -171,7 +172,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                         entry.getLong("TopicChooseMessageId"),
                         entry.getLong("CreationTime"),
                         entry.getLong("LastNotOpenedNotifyTime"),
-                        DocumentFileType.JSON.reader.read(entry.getString("TicketNotOpenedNotificationMessages")).getObject("value", object : TypeReference<MutableCollection<Long>>() {}))
+                        ticketNotOpenedNotificationMessages)
             }
             return null
         }
