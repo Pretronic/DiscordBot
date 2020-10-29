@@ -24,6 +24,8 @@ class ProvideInformationTicketState: TicketState {
         if(event.member != ticket.creator.asMember()) return
         val entry = ticket.topics.last()
         entry.description.add(TicketMessage(event.messageIdLong, event.message.contentDisplay, event.member?.idLong, event.member?.effectiveName))
+
+        ticket.clearTicketNotOpenedNotifications(event.channel)
     }
 
     override fun onReactionAdd(ticket: Ticket, event: GuildMessageReactionAddEvent) {

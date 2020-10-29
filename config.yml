@@ -33,7 +33,7 @@ ticketTopics:
     resourceId: 1
   - name: 'General'
     emoji: '🇬'
-  - name: 'Bewerbung'
+  - name: 'Application'
     emoji: '📰'
 ticketCategoryId: 685585480339030029
 ticketCloseEmoji: '🔒'

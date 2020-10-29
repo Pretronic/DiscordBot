@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.pretronic.databasequery.api.dsl.find
 import net.pretronic.databasequery.api.dsl.insert
+import net.pretronic.databasequery.api.dsl.update
 import net.pretronic.databasequery.api.query.result.QueryResult
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.extensions.addReaction
@@ -16,6 +17,7 @@ import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
+import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.Validate
 import net.pretronic.libraries.utility.interfaces.ObjectOwner
@@ -44,14 +46,16 @@ class TicketManager(private val discordBot: DiscordBot) {
                 it.sendMessageKey(Messages.DISCORD_TICKET_CONTROL_MESSAGE, language).queue { message ->
                     message.addReaction(discordBot.config.ticketCloseEmoji)?.queue()
 
+                    val now = System.currentTimeMillis()
                     val id = discordBot.storage.ticket.insert {
                         set("State", TicketState.TOPIC_CHOOSING.name)
                         set("ChannelId", it.idLong)
                         set("Language", language.name + "_" + language.localizedName)
                         set("DiscordControlMessageId", message.idLong)
+                        set("CreationTime", now)
                     }.executeAndGetGeneratedKeyAsInt("Id")
 
-                    val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong, System.currentTimeMillis())
+                    val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong, now, 0, arrayListOf())
                     ticket.state.handleChange(ticket)
                     tickets.insert(ticket)
 
@@ -91,10 +95,18 @@ class TicketManager(private val discordBot: DiscordBot) {
                 .delay(30, TimeUnit.SECONDS)
                 .execute {
                     tickets.cachedObjects.forEach {
-                        if(it.state != TicketState.OPEN && it.creationTime+TimeUnit.MINUTES.toMillis(20) < System.currentTimeMillis()
-                                && (it.lastNotOpenedNotifyTime == -1L || it.lastNotOpenedNotifyTime+TimeUnit.MINUTES.toMillis(20) < System.currentTimeMillis())) {
+                        if(it.state != TicketState.OPEN && it.creationTime+TimeUnit.MINUTES.toMillis(15) < System.currentTimeMillis()
+                                && (it.lastNotOpenedNotifyTime == -1L || it.lastNotOpenedNotifyTime+TimeUnit.MINUTES.toMillis(15) < System.currentTimeMillis())) {
                             it.lastNotOpenedNotifyTime = System.currentTimeMillis()
-                            it.discordChannel?.sendMessageKey(Messages.DISCORD_TICKET_NOT_OPENED_NOTIFY, it.language, mapOf(Pair("creator", it.creator.asMember()?.asMention?:"ERROR")))?.queue()
+                            it.discordChannel?.sendMessageKey(Messages.DISCORD_TICKET_NOT_OPENED_NOTIFY, it.language, mapOf(Pair("creator", it.creator.asMember()?.asMention?:"ERROR")))?.queue { message ->
+                                val messageId = message.idLong
+                                it.ticketNotOpenedNotificationMessages.add(messageId)
+                                DiscordBot.INSTANCE.storage.ticket.update {
+                                    set("TicketNotOpenedNotificationMessages",
+                                            DocumentFileType.JSON.writer.write(Document.newDocument().set("value", it.ticketNotOpenedNotificationMessages), false))
+                                    where("Id", it.id)
+                                }.executeAsync()
+                            }
                         }
                     }
                 }
@@ -158,7 +170,9 @@ class TicketManager(private val discordBot: DiscordBot) {
                         entry.getLong("DiscordControlMessageId"),
                         arrayListOf(),
                         entry.getLong("TopicChooseMessageId"),
-                        entry.getLong("CreationTime"))
+                        entry.getLong("CreationTime"),
+                        entry.getLong("LastNotOpenedNotifyTime"),
+                        DocumentFileType.JSON.reader.read(entry.getString("TicketNotOpenedNotificationMessages")).getCollection("value", Long::class.java))
             }
             return null
         }

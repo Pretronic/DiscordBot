@@ -36,6 +36,7 @@ class TopicChoosingTicketState : TicketState {
                         }
                     }
                 }
+                ticket.clearTicketNotOpenedNotifications(event.channel)
                 ticket.state = TicketState.PROVIDE_INFORMATION
                 return
             }

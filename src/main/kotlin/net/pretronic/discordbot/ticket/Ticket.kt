@@ -21,7 +21,9 @@ class Ticket(val id: Int,
              val discordControlMessageId: Long,
              val topics: MutableCollection<TicketTopicContent>,
              topicChooseMessageId: Long?,
-             val creationTime: Long) {
+             val creationTime: Long,
+             lastNotOpenedNotifyTime: Long,
+             val ticketNotOpenedNotificationMessages: MutableCollection<Long>) {
 
     constructor(id: Int,
                 discordChannelId: Long,
@@ -29,10 +31,12 @@ class Ticket(val id: Int,
                 language: Language,
                 creatorId: Long,
                 discordControlMessageId: Long,
-                creationTime: Long) :
+                creationTime: Long,
+                lastNotOpenedNotifyTime: Long,
+                ticketNotOpenedNotificationMessages: MutableCollection<Long>):
             this(id, discordChannelId, state, language,
                     mutableListOf(TicketParticipant(creatorId, TicketParticipantRole.CREATOR)),
-                    discordControlMessageId, ArrayList(), null, creationTime)
+                    discordControlMessageId, ArrayList(), null, creationTime, lastNotOpenedNotifyTime, ticketNotOpenedNotificationMessages)
 
     var state: TicketState = state
         set(value) {
@@ -57,7 +61,14 @@ class Ticket(val id: Int,
     val discordChannel: TextChannel?
         get() = DiscordBot.INSTANCE.jda.getTextChannelById(discordChannelId)
 
-    var lastNotOpenedNotifyTime: Long = -1
+    var lastNotOpenedNotifyTime: Long = lastNotOpenedNotifyTime
+        set(value) {
+            field = value
+            DiscordBot.INSTANCE.storage.ticket.update {
+                set("LastNotOpenedNotifyTime", value)
+                where("Id", id)
+            }.executeAsync()
+        }
 
     fun addParticipant(participant: TicketParticipant) {
         this.participants.add(participant)
@@ -99,4 +110,14 @@ class Ticket(val id: Int,
         DiscordBot.INSTANCE.getPretronicGuild().getTextChannelById(DiscordBot.INSTANCE.config.ticketLogChannelId)?.sendMessage(builder.build())?.queue()
     }
 
+    fun clearTicketNotOpenedNotifications(channel: TextChannel) {
+        this.ticketNotOpenedNotificationMessages.forEach {
+            channel.deleteMessageById(it).queue()
+        }
+        this.ticketNotOpenedNotificationMessages.clear()
+        DiscordBot.INSTANCE.storage.ticket.update {
+            set("TicketNotOpenedNotificationMessages", "{}")
+            where("Id", id)
+        }.executeAsync()
+    }
 }
