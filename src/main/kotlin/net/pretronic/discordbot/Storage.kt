@@ -6,8 +6,6 @@ import net.pretronic.databasequery.api.collection.field.FieldOption
 import net.pretronic.databasequery.api.datatype.DataType
 import net.pretronic.databasequery.api.dsl.createCollection
 import net.pretronic.databasequery.api.query.ForeignKey
-import net.pretronic.discordbot.ticket.topic.TicketTopic
-import net.pretronic.libraries.document.DocumentContext
 
 class Storage(database : Database) {
 

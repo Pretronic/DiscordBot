@@ -5,13 +5,12 @@ import net.pretronic.databasequery.api.dsl.insert
 import net.pretronic.databasequery.api.query.result.QueryResult
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.extensions.replyKey
-import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.extensions.sendMessageKey
+import net.pretronic.discordbot.message.Messages
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.CacheQuery
 import net.pretronic.libraries.utility.interfaces.ObjectOwner
 import net.pretronic.spigotsite.api.SpigotSite
-import net.pretronic.spigotsite.api.user.User
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDate

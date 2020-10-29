@@ -12,8 +12,6 @@ import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.document.annotations.DocumentIgnored
 import net.pretronic.libraries.utility.duration.DurationProcessor
-import net.pretronic.libraries.utility.map.index.IndexMap
-import net.pretronic.spigotsite.api.SpigotSite
 import net.pretronic.spigotsite.api.user.User
 import java.net.InetSocketAddress
 import java.time.Duration

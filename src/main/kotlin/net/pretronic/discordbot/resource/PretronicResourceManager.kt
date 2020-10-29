@@ -2,10 +2,6 @@ package net.pretronic.discordbot.resource
 
 import net.pretronic.databasequery.api.query.result.QueryResult
 import net.pretronic.discordbot.DiscordBot
-import net.pretronic.libraries.utility.interfaces.ObjectOwner
-import net.pretronic.spigotsite.api.SpigotSite
-import net.pretronic.spigotsite.api.resource.PremiumResource
-import java.util.concurrent.TimeUnit
 
 class PretronicResourceManager(val discordBot: DiscordBot) {
 

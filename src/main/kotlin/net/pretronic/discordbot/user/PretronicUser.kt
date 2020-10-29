@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.pretronic.discordbot.DiscordBot
-import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.resource.PretronicResource
 import java.sql.Date
 import java.sql.Timestamp

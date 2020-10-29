@@ -23,7 +23,6 @@ import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler
 import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.DocumentRegistry
 import net.pretronic.libraries.document.type.DocumentFileType
-import net.pretronic.libraries.logging.PretronicLogger
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity

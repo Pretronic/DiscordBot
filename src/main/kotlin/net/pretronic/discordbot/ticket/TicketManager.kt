@@ -1,6 +1,5 @@
 package net.pretronic.discordbot.ticket
 
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.pretronic.databasequery.api.dsl.find
@@ -13,7 +12,6 @@ import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
-import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
@@ -21,7 +19,6 @@ import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.Validate
 import net.pretronic.libraries.utility.interfaces.ObjectOwner
-import net.pretronic.libraries.utility.reflect.TypeReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 

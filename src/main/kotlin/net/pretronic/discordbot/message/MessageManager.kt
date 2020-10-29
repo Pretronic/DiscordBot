@@ -4,13 +4,11 @@ import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.message.embed.EmbedAuthorData
 import net.pretronic.discordbot.message.embed.EmbedData
 import net.pretronic.discordbot.message.language.Language
-import net.pretronic.discordbot.user.PretronicUser
 import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.entry.PrimitiveEntry
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.io.FileUtil
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.nio.file.Files
 import java.nio.file.Paths
 

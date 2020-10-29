@@ -1,6 +1,5 @@
 package net.pretronic.discordbot.message
 
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.pretronic.discordbot.message.embed.EmbedData
 

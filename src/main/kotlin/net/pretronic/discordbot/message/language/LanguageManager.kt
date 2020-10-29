@@ -1,7 +1,6 @@
 package net.pretronic.discordbot.message.language
 
 import net.pretronic.discordbot.DiscordBot
-import net.pretronic.discordbot.message.language.Language
 
 class LanguageManager(private val discordBot: DiscordBot) {
 

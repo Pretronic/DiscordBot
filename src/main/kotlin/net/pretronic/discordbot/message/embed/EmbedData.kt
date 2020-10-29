@@ -2,7 +2,6 @@ package net.pretronic.discordbot.message.embed
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.pretronic.discordbot.message.Message
 import net.pretronic.discordbot.message.Messages
 import java.awt.Color
 

@@ -8,7 +8,6 @@ import net.pretronic.libraries.document.entry.PrimitiveEntry
 import net.pretronic.libraries.document.simple.SimplePrimitiveEntry
 import net.pretronic.libraries.utility.Convert
 import net.pretronic.libraries.utility.reflect.TypeReference
-import java.lang.IllegalArgumentException
 
 class DiscordEmoji(val id: Long?, val unicode: String?) {
 

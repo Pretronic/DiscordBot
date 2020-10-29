@@ -1,7 +1,6 @@
 package net.pretronic.discordbot.ticket
 
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.pretronic.databasequery.api.dsl.insert
 import net.pretronic.databasequery.api.dsl.update

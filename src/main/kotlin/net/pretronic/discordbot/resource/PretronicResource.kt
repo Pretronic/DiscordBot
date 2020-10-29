@@ -2,8 +2,6 @@ package net.pretronic.discordbot.resource
 
 import net.dv8tion.jda.api.entities.Role
 import net.pretronic.discordbot.DiscordBot
-import net.pretronic.spigotsite.api.SpigotSite
-import net.pretronic.spigotsite.api.resource.Resource
 
 class PretronicResource(val id: Int, val publicId: String, val name: String, val spigotMcResourceId: Int, val licensed: Boolean) {
 

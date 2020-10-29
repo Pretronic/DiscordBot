@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.pretronic.discordbot.extensions.addReactionById
-import net.pretronic.discordbot.extensions.sendMessageKey
-import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.ticket.state.TicketState
 
 class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
