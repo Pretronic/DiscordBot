@@ -19,6 +19,7 @@ import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.type.DocumentFileType
 import net.pretronic.libraries.utility.Validate
 import net.pretronic.libraries.utility.interfaces.ObjectOwner
+import net.pretronic.libraries.utility.reflect.TypeReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -95,7 +96,8 @@ class TicketManager(private val discordBot: DiscordBot) {
                         if(it.state != TicketState.OPEN && it.creationTime+TimeUnit.MINUTES.toMillis(15) < System.currentTimeMillis()
                                 && (it.lastNotOpenedNotifyTime == -1L || it.lastNotOpenedNotifyTime+TimeUnit.MINUTES.toMillis(15) < System.currentTimeMillis())) {
                             it.lastNotOpenedNotifyTime = System.currentTimeMillis()
-                            it.discordChannel?.sendMessageKey(Messages.DISCORD_TICKET_NOT_OPENED_NOTIFY, it.language, mapOf(Pair("creator", it.creator.asMember()?.asMention?:"ERROR")))?.queue { message ->
+                            it.discordChannel?.sendMessageKey(Messages.DISCORD_TICKET_NOT_OPENED_NOTIFY, it.language, mapOf(Pair("creator", it.creator.asMember()?.asMention
+                                    ?: "ERROR")))?.queue { message ->
                                 val messageId = message.idLong
                                 it.ticketNotOpenedNotificationMessages.add(messageId)
                                 DiscordBot.INSTANCE.storage.ticket.update {
@@ -169,7 +171,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                         entry.getLong("TopicChooseMessageId"),
                         entry.getLong("CreationTime"),
                         entry.getLong("LastNotOpenedNotifyTime"),
-                        DocumentFileType.JSON.reader.read(entry.getString("TicketNotOpenedNotificationMessages")).getCollection("value", Long::class.java))
+                        DocumentFileType.JSON.reader.read(entry.getString("TicketNotOpenedNotificationMessages")).getObject("value", object : TypeReference<MutableCollection<Long>>() {}))
             }
             return null
         }
