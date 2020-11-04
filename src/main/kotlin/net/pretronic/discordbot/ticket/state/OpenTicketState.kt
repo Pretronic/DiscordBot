@@ -14,6 +14,10 @@ class OpenTicketState: TicketState {
     override val name: String = "Open"
 
     override fun handleChange(ticket: Ticket) {
+        ticket.discordChannel?.let {
+            ticket.clearTicketNotOpenedNotifications(it)
+        }
+
         ticket.logTicketAction(TicketAction.CREATE, null)
         ticket.creator.asMember()?.let { ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
         ticket.discordChannel?.upsertPermissionOverride(DiscordBot.INSTANCE.config.teamRole)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
