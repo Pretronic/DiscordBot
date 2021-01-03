@@ -17,13 +17,15 @@ class ProvideInformationTicketState: TicketState {
     override val name: String = "ProvideInformation"
 
     override fun handleChange(ticket: Ticket) {
-        ticket.creator.asMember()?.let { ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue() }
+        ticket.creator.asMember()?.let {
+            ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
+        }
     }
 
     override fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent) {
         if(event.member != ticket.creator.asMember()) return
         val entry = ticket.topics.last()
-        entry.description.add(TicketMessage(event.messageIdLong, event.message.contentDisplay, event.member?.idLong, event.member?.effectiveName))
+        entry.addDescription( TicketMessage(event.messageIdLong, event.message.contentDisplay, event.member?.idLong, event.member?.effectiveName))
 
         ticket.clearTicketNotOpenedNotifications(event.channel)
     }

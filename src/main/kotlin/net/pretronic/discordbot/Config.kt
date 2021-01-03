@@ -62,6 +62,8 @@ class Config {
     var ticketProvideInformationFinishEmoji = DiscordEmoji("✅")
     var ticketProvideInformationNextTopicEmoji = DiscordEmoji("➡️")
 
+    var privateChatBackupInformationChannelId: Long = 0
+
 
 
     var languages: Collection<Language> = listOf(Language("English", "en", true, DiscordEmoji("\t\uD83C\uDDEC\uD83C\uDDE7"))

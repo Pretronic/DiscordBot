@@ -12,6 +12,8 @@ import net.pretronic.discordbot.extensions.sendMessageKey
 import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
+import net.pretronic.discordbot.ticket.topic.TicketTopic
+import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.caching.ArrayCache
 import net.pretronic.libraries.caching.Cache
 import net.pretronic.libraries.caching.CacheQuery
@@ -84,6 +86,10 @@ class TicketManager(private val discordBot: DiscordBot) {
 
     fun getTicket(discordUserId: Long): Ticket? {
         return tickets.get("openDiscordUserId", discordUserId)
+    }
+
+    fun getTicketByChannelId(channelId: Long): Ticket? {
+        return tickets.get("openDiscordChannelId", channelId)
     }
 
     private fun startTicketOpenNotifier() {
@@ -168,11 +174,11 @@ class TicketManager(private val discordBot: DiscordBot) {
                         DiscordBot.INSTANCE.languageManager.getOrCreate(languageSplit[0], languageSplit[1]),
                         loadParticipants(ticketId),
                         entry.getLong("DiscordControlMessageId"),
-                        arrayListOf(),
+                        DocumentFileType.JSON.reader.read(entry.getString("Topics")).getAsObject(object : TypeReference<ArrayList<TicketTopicContent>>() {}),
                         entry.getLong("TopicChooseMessageId"),
                         entry.getLong("CreationTime"),
                         entry.getLong("LastNotOpenedNotifyTime"),
-                        ticketNotOpenedNotificationMessages)
+                        ticketNotOpenedNotificationMessages).init()
             }
             return null
         }

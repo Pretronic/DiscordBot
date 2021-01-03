@@ -18,10 +18,11 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+        println(event.message.contentDisplay)
         if(event.author == discordBot.jda.selfUser) return
         channelAutoEmojisCheck(event)
-        discordBot.ticketManager.tickets.cachedObjects.forEach {
-            if(it.discordChannelId == event.channel.idLong && it.creator.discordId == event.author.idLong) {
+        discordBot.ticketManager.getTicketByChannelId(event.channel.idLong)?.let {
+            if(it.creator.discordId == event.author.idLong) {
                 it.state.onMessageReceive(it, event)
             }
         }

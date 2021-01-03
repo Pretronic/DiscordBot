@@ -1,7 +1,6 @@
 package net.pretronic.discordbot.extensions
 
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction
@@ -46,3 +45,14 @@ fun Message.retrieveReactionUsers(emoji: DiscordEmoji): ReactionPaginationAction
     if(emoji.unicode != null) return retrieveReactionUsers(emoji.unicode)
     return emoji.id?.let { it -> DiscordBot.INSTANCE.jda.getEmoteById(it)?.let { retrieveReactionUsers(it) } }
 }
+
+/*fun User.sendInformationMessage(guild: Guild, messageKey: String, replacements: Map<String, String>): MessageAction {
+    if(guild.isMember(this)) {
+        val member = guild.getMember(this)
+        this.openPrivateChannel().queue( {
+            it.sendMessageKey(messageKey, replacements)
+        }, {
+            guild.getTextChannelById(DiscordBot.INSTANCE.config)
+        })
+    }
+}*/

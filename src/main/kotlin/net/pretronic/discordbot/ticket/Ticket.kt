@@ -11,6 +11,8 @@ import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.state.TicketState
 import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
+import net.pretronic.libraries.document.Document
+import net.pretronic.libraries.document.type.DocumentFileType
 
 class Ticket(val id: Int,
              val discordChannelId: Long,
@@ -79,7 +81,11 @@ class Ticket(val id: Int,
     }
 
     fun addTopic(ticketTopic: TicketTopic) {
-        this.topics.add(TicketTopicContent(ticketTopic, arrayListOf()))
+        this.topics.add(TicketTopicContent(this, ticketTopic, arrayListOf()))
+        DiscordBot.INSTANCE.storage.ticket.update {
+            set("Topics", DocumentFileType.JSON.writer.write(Document.newDocument(topics), false))
+            where("Id", id)
+        }.execute()
     }
 
     fun isCreator(discordId: Long): Boolean {
@@ -88,9 +94,11 @@ class Ticket(val id: Int,
 
     fun close() {
         DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
-        creator.asMember()?.user?.openPrivateChannel()?.queue { channel ->
+        creator.asMember()?.user?.openPrivateChannel()?.queue ({ channel ->
             channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, language).queue()
-        }
+        }, {
+            //Ignored
+        })
     }
 
     fun logTicketAction(ticketAction: TicketAction, pasteKey: String?) {
@@ -118,5 +126,12 @@ class Ticket(val id: Int,
             set("TicketNotOpenedNotificationMessages", "{}")
             where("Id", id)
         }.executeAsync()
+    }
+
+    fun init(): Ticket {
+        this.topics.forEach {
+            it.ticket = this
+        }
+        return this
     }
 }
