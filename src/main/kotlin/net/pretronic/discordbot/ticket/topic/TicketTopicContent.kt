@@ -18,7 +18,6 @@ class TicketTopicContent(@DocumentIgnored var ticket: Ticket, topic: TicketTopic
         }
 
     fun addDescription(message: TicketMessage) {
-        println(description)
         this.description.add(message)
         DiscordBot.INSTANCE.storage.ticket.update {
             set("Topics", DocumentFileType.JSON.writer.write(Document.newDocument(ticket.topics), false))

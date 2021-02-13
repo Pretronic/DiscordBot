@@ -10,14 +10,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.pretronic.databasequery.api.driver.DatabaseDriverFactory
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
-import net.pretronic.discordbot.commands.GetUserIdCommand
-import net.pretronic.discordbot.commands.VerifyCommand
 import net.pretronic.discordbot.commands.setup.SetupCommand
+import net.pretronic.discordbot.config.Config
 import net.pretronic.discordbot.message.MessageManager
 import net.pretronic.discordbot.message.language.LanguageManager
-import net.pretronic.discordbot.resource.PretronicResourceManager
 import net.pretronic.discordbot.ticket.TicketManager
-import net.pretronic.discordbot.user.PretronicUserManager
+import net.pretronic.discordbot.verification.VerificationManager
 import net.pretronic.libraries.concurrent.TaskScheduler
 import net.pretronic.libraries.concurrent.simple.SimpleTaskScheduler
 import net.pretronic.libraries.document.Document
@@ -47,18 +45,15 @@ class DiscordBot {
     val messageManager: MessageManager
     val storage: Storage
     val jda : JDA
-    val resourceManager: PretronicResourceManager
-    val userManager: PretronicUserManager
     val ticketManager: TicketManager
+    val verificationManager: VerificationManager = VerificationManager(this)
 
     init {
         //SLF4JStaticBridge.setLogger(this.logger)
         Sentry.init("https://e3c0db053f984827a8618609fd024dfb@o428820.ingest.sentry.io/5374871");
 
-
         logger.info("DiscordBot starting...")
         INSTANCE = this
-        //SpigotSite.setAPI(SpigotSiteCore())
 
         this.config = initConfig()
 
@@ -70,17 +65,10 @@ class DiscordBot {
 
         this.storage = initStorage()
 
-
-        this.resourceManager = PretronicResourceManager(this).init()
-
-        this.userManager = PretronicUserManager(this)
-        //this.userManager.startConversationProcessor()
-
         this.ticketManager = TicketManager(this)
 
         this.jda = initJDA()
         this.config.jdaInit()
-        this.resourceManager.createDiscordResourceRoles()
         logger.info("DiscordBot successful started")
     }
 
@@ -89,7 +77,7 @@ class DiscordBot {
     }
 
     fun getPretronicGuild() : Guild {
-        return jda.getGuildById(config.guildId)!!
+        return config.getPretronicGuild()
     }
 
     private fun initConfig(): Config {
@@ -110,8 +98,6 @@ class DiscordBot {
                 .setPrefix("!")
                 .setStatus(config.botOnlineStatus)
                 .setActivity(Activity.of(config.botActivityType, config.botActivityName, config.botActivityUrl))
-                .addCommand(VerifyCommand(this))
-                .addCommand(GetUserIdCommand(this))
                 .addCommand(SetupCommand())
                 .setOwnerId("246659669077131264")
 
@@ -121,15 +107,13 @@ class DiscordBot {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build()
         jda.awaitReady()
-
-
         return jda
     }
 
     private fun initStorage() : Storage {
         val driver = DatabaseDriverFactory.create("DiscordBot", this.config.storage)
         driver.connect()
-        return Storage(driver.getDatabase(this.config.databaseName))
+        return Storage(driver.getDatabase(this.config.databaseName), driver.getDatabase(this.config.botDatabaseName))
     }
 
     fun pasteAndGetKey(data: String): String {

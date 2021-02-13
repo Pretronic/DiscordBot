@@ -7,14 +7,9 @@ import net.pretronic.databasequery.api.datatype.DataType
 import net.pretronic.databasequery.api.dsl.createCollection
 import net.pretronic.databasequery.api.query.ForeignKey
 
-class Storage(database : Database) {
+class Storage(oldDatabase : Database, botDatabase: Database) {
 
-    val user: DatabaseCollection = database.getCollection("pretronic_user")
-    val license: DatabaseCollection = database.getCollection("pretronic_license")
-    val pendingVerification: DatabaseCollection = database.getCollection("pretronic_user_pending_verification")
-    val resource: DatabaseCollection = database.getCollection("pretronic_resource")
-
-    val ticket: DatabaseCollection = database.createCollection("pretronic_ticket") {
+    val ticket: DatabaseCollection = oldDatabase.createCollection("pretronic_ticket") {
         field { it.name("Id").type(DataType.INTEGER).options(FieldOption.PRIMARY_KEY, FieldOption.AUTO_INCREMENT) }
         field { it.name("State").type(DataType.STRING).options(FieldOption.NOT_NULL) }
         field { it.name("ChannelId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
@@ -22,11 +17,15 @@ class Storage(database : Database) {
         field { it.name("DiscordControlMessageId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
         field { it.name("TopicChooseMessageId").type(DataType.LONG) }
     }.create()
-    val ticketParticipants = database.createCollection("pretronic_ticket_participants") {
+    val ticketParticipants = oldDatabase.createCollection("pretronic_ticket_participants") {
         field { it.name("TicketId").type(DataType.INTEGER).foreignKey(ticket, "Id", ForeignKey.Option.CASCADE)
                 .options(FieldOption.NOT_NULL) }
         field { it.name("DiscordUserId").type(DataType.LONG).options(FieldOption.NOT_NULL) }
         field { it.name("Role").type(DataType.STRING).options(FieldOption.NOT_NULL) }
     }.create()
 
+
+    val pendingVerifications: DatabaseCollection = botDatabase.getCollection("pretronic_bot_pending_verifications")
+
+    val mcnativeResourceOwners: DatabaseCollection = botDatabase.getCollection("pretronic_bot_mcnative_resource_owners")
 }

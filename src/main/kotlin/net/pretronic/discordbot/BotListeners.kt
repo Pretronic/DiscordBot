@@ -1,24 +1,22 @@
 package net.pretronic.discordbot
 
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.MessageReaction
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.pretronic.discordbot.extensions.addReaction
 import net.pretronic.discordbot.extensions.addReactionById
 import net.pretronic.discordbot.ticket.state.TicketState
+import javax.annotation.Nonnull
 
 class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
 
-    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
-        val pretronicUser = discordBot.userManager.getUserByDiscord(event.user.idLong)
-        if(pretronicUser != null && pretronicUser.isVerified()) {
-            pretronicUser.addVerifiedRoles()
-        }
-    }
-
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        println(event.message.contentDisplay)
         if(event.author == discordBot.jda.selfUser) return
         channelAutoEmojisCheck(event)
         discordBot.ticketManager.getTicketByChannelId(event.channel.idLong)?.let {
@@ -32,18 +30,41 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         if(event.user == discordBot.jda.selfUser) return
         ticketEventExecutionAndCloseCheck(event)
         if(event.messageIdLong == discordBot.config.ticketCreateMessageId) {
-            if(discordBot.config.ticketVerifyOpenReactionEmoji.isDiscordEmoji(event.reactionEmote)) {
-                ticketEventVerify(event)
-            } else {
-                ticketEventCreateCheck(event)
+            ticketEventCreateCheck(event)
+        } else {
+            discordBot.config.subscribeGroupEmoji.forEach {
+                if(event.messageIdLong == it.messageId) {
+                    it.emojiRoles.forEach { (emoji, roleId)->
+                        if(emoji.isDiscordEmoji(event.reactionEmote)) {
+                            toggleRole(roleId, event.member, event.reaction)
+                            return
+                        }
+                    }
+                }
+            }
+            discordBot.config.channelAutoEmojis.forEach {
+                if(it.channelId == event.channel.idLong) {
+                    it.emojiRoles.forEach { autoEmoji ->
+                        if(autoEmoji.value > 0) {
+                            if(autoEmoji.key.isDiscordEmoji(event.reactionEmote)) {
+                                toggleRole(autoEmoji.value, event.member, event.reaction)
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+        discordBot.verificationManager.checkPendingVerification(event.member.idLong)
     }
 
     override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
         discordBot.ticketManager.getTicket(event.user.idLong)?.let {
             it.state = TicketState.CLOSED
         }
+        discordBot.verificationManager.addPendingVerification(event.user.idLong)
     }
 
     private fun ticketEventExecutionAndCloseCheck(event: GuildMessageReactionAddEvent) {
@@ -67,18 +88,26 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         }
     }
 
-    private fun ticketEventVerify(event: GuildMessageReactionAddEvent) {
-        event.reaction.removeReaction(event.user).queue()
-        discordBot.userManager.verify(event.member)
-    }
-
     private fun channelAutoEmojisCheck(event: GuildMessageReceivedEvent) {
         discordBot.config.channelAutoEmojis.forEach {
-            if(it.key == event.channel.idLong) {
-                it.value.forEach { emoji ->
-                    event.channel.addReactionById(event.messageIdLong, emoji)?.queue({},{/*Ignored*/})
+
+            if(it.channelId == event.channel.idLong) {
+                it.emojiRoles.forEach { autoEmoji ->
+                    event.channel.addReactionById(event.messageIdLong, autoEmoji.key)?.queue({},{/*Ignored*/})
                 }
             }
+        }
+    }
+
+    private fun toggleRole(roleId: Long, member: Member, reaction: MessageReaction? = null) {
+        val guild = member.guild
+        guild.getRoleById(roleId)?.let { role ->
+            if(member.roles.contains(role)) {
+                guild.removeRoleFromMember(member, role).queue()
+            } else {
+                guild.addRoleToMember(member, role).queue()
+            }
+            reaction?.removeReaction(member.user)?.queue()
         }
     }
 }

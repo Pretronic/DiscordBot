@@ -1,12 +1,15 @@
-package net.pretronic.discordbot
+package net.pretronic.discordbot.config
 
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Category
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Role
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
 import net.pretronic.databasequery.sql.dialect.Dialect
 import net.pretronic.databasequery.sql.driver.config.SQLDatabaseDriverConfigBuilder
+import net.pretronic.discordbot.DiscordBot
+import net.pretronic.discordbot.DiscordEmoji
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
@@ -21,6 +24,7 @@ class Config {
     var botToken : String = "YOUR TOKEN"
 
     var databaseName: String = "Pretronic"
+    var botDatabaseName: String = "pretronic-bot"
     var storage: DatabaseDriverConfig<*> = SQLDatabaseDriverConfigBuilder()
             .setAddress(InetSocketAddress.createUnresolved("127.0.0.1", 3306))
             .setDialect(Dialect.MARIADB)
@@ -33,27 +37,18 @@ class Config {
     var botActivityName = "https://pretronic.net"
     var botActivityUrl: String? = "https://paste.pretronic.net"
 
+
     var verifiedRoleId: Long = 0
+    val verifiedRole: Role?
+        get() = getPretronicGuild().getRoleById(verifiedRoleId)
     var teamRoleId: Long = 0
     @DocumentIgnored lateinit var teamRole: Role
     var guildId: Long = 0
 
-    private var pendingUserVerificationExpiry = DurationProcessor.getStandard().formatShort(Duration.ofDays(7))
-    @DocumentIgnored var pendingUserVerificationExpiryTime : Long = 0
-
-
-    private var spigotLogin = "Username"
-    private var spigotPassword = "<masked>"
-    private var spigotTwoFactorAuth = "<masked>"
-    @DocumentIgnored lateinit var spigotUser: User
-
-
     var ticketLogChannelId: Long = 0
 
-    var ticketCreateTextChannelId: Long = 0
     var ticketCreateMessageId: Long = 0
-    var ticketVerifyOpenReactionEmoji = DiscordEmoji("✅")
-    var ticketTopics: List<TicketTopic> = listOf(TicketTopic("General", DiscordEmoji("\uD83C\uDDEC"), null))
+    var ticketTopics: List<TicketTopic> = listOf()
 
     private var ticketCategoryId: Long = 0
     @DocumentIgnored lateinit var ticketCategory: Category
@@ -62,24 +57,36 @@ class Config {
     var ticketProvideInformationFinishEmoji = DiscordEmoji("✅")
     var ticketProvideInformationNextTopicEmoji = DiscordEmoji("➡️")
 
-    var privateChatBackupInformationChannelId: Long = 0
-
-
 
     var languages: Collection<Language> = listOf(Language("English", "en", true, DiscordEmoji("\t\uD83C\uDDEC\uD83C\uDDE7"))
             , Language("Deutsch", "de", false, DiscordEmoji("\uD83C\uDDE9\uD83C\uDDEA")))
 
-    val channelAutoEmojis: Map<Long, List<DiscordEmoji>> = mapOf(Pair(0L, listOf(DiscordEmoji("\uD83D\uDC4D"), DiscordEmoji("\uD83D\uDC4E"))))
+    val channelAutoEmojis: Collection<ChannelAutoEmoji> = listOf()
+
+
+    val subscribeGroupEmoji: Collection<SubscribeGroupEmoji> = listOf()
+
+
+    val resourceRoleIds: Map<String, Long> = mapOf()
 
     fun init() : Config {
-        this.pendingUserVerificationExpiryTime = DurationProcessor.getStandard().parse(pendingUserVerificationExpiry).toMillis()
-        //this.spigotUser = SpigotSite.getAPI().userManager.authenticate(spigotLogin, spigotPassword, spigotTwoFactorAuth)
+        subscribeGroupEmoji.forEach {
+            it.init()
+        }
+        channelAutoEmojis.forEach {
+            it.init()
+        }
         return this
     }
 
     fun jdaInit() {
         this.ticketCategory = DiscordBot.INSTANCE.jda.getCategoryById(this.ticketCategoryId)!!
         this.teamRole = DiscordBot.INSTANCE.getPretronicGuild().getRoleById(this.teamRoleId)!!
+
+        println("Custom emotes:")
+        getPretronicGuild().emotes.forEach {
+            println("${it.idLong} | ${it.name}")
+        }
     }
 
     fun ticketTopicByName(name: String): TicketTopic {
@@ -88,18 +95,34 @@ class Config {
 
     fun getAccessAbleTicketTopics(discordId: Long, topics: Collection<TicketTopicContent>): List<TicketTopic> {
         val accessAble = ArrayList<TicketTopic>()
-        val user = DiscordBot.INSTANCE.userManager.getUserByDiscord(discordId)
+        val member = getPretronicGuild().getMemberById(discordId)
         ticketTopics.forEach {
             if(topics.firstOrNull { content -> content.topic == it } == null) {
-                if(it.resource != null) {
-                    if(user != null && user.resources.contains(it.resource!!)) {
-                        accessAble.add(it)
+                it.roleIds?.let { roleIds ->
+                    member?.let { member ->
+                        var added = false
+                        roleIds.forEach { roleId ->
+                            if(member.roles.any { role -> role.idLong == roleId }) {
+                                if(!added) {
+                                    accessAble.add(it)
+                                    added = true
+                                }
+                            }
+                        }
                     }
-                } else {
-                    accessAble.add(it)
-                }
+                }?:accessAble.add(it)
             }
         }
         return accessAble
+    }
+
+    fun getPretronicGuild() : Guild {
+        return DiscordBot.INSTANCE.jda.getGuildById(guildId)!!
+    }
+
+    fun getResourceRole(resourceId: String): Role? {
+        return this.resourceRoleIds[resourceId]?.let {
+            getPretronicGuild().getRoleById(it)
+        }
     }
 }

@@ -9,7 +9,16 @@ import net.pretronic.libraries.document.simple.SimplePrimitiveEntry
 import net.pretronic.libraries.utility.Convert
 import net.pretronic.libraries.utility.reflect.TypeReference
 
-class DiscordEmoji(val id: Long?, val unicode: String?) {
+class DiscordEmoji(val id: Long? = null, val unicode: String? = null) {
+
+    companion object {
+        fun of(value: Any): DiscordEmoji {
+            if(value is String || value is Char) {
+                return DiscordEmoji(unicode = value.toString())
+            }
+            return DiscordEmoji(id=Convert.toLong(value))
+        }
+    }
 
     constructor(id: Long): this(id, null)
 
@@ -29,11 +38,11 @@ class DiscordEmoji(val id: Long?, val unicode: String?) {
 
         override fun read(base: DocumentBase, type: TypeReference<DiscordEmoji>): DiscordEmoji {
             base as PrimitiveEntry
-            try {
+            return try {
                 val id = Convert.toLong(base.asObject)
-                return DiscordEmoji(id)
+                DiscordEmoji(id)
             } catch (exception: IllegalArgumentException) {
-                return DiscordEmoji(base.asString)
+                DiscordEmoji(base.asString)
             }
         }
     }
