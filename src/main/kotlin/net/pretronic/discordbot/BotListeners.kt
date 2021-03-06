@@ -64,7 +64,12 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
         discordBot.ticketManager.getTicket(event.user.idLong)?.let {
             it.state = TicketState.CLOSED
         }
-        discordBot.verificationManager.addPendingVerification(event.user.idLong)
+
+        event.member?.let { member ->
+            if(member.roles.any { role -> role.idLong == DiscordBot.INSTANCE.config.verifiedRoleId }) {
+                discordBot.verificationManager.addPendingVerification(event.user.idLong)
+            }
+        }
     }
 
     private fun ticketEventExecutionAndCloseCheck(event: GuildMessageReactionAddEvent) {
