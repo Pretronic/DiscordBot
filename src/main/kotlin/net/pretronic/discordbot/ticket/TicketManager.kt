@@ -37,8 +37,8 @@ class TicketManager(private val discordBot: DiscordBot) {
         startTicketOpenNotifier()
     }
 
-    fun createTicket(member: Member, language: Language): CompletableFuture<Void> {
-        val future = CompletableFuture<Void>()
+    fun createTicket(member: Member, language: Language): CompletableFuture<Ticket?> {
+        val future = CompletableFuture<Ticket?>()
         val ticket0 = tickets.get("openDiscordUserId", member.idLong)
         if (ticket0 == null) {
             discordBot.config.ticketCategory.createTextChannel(language.localizedName + "-" + member.effectiveName).queue {
@@ -68,11 +68,12 @@ class TicketManager(private val discordBot: DiscordBot) {
                     it.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE, language).queue { message2 ->
                         ticket.topicChooseMessageId = message2.idLong
                         discordBot.config.getAccessAbleTicketTopics(member.idLong, ticket.topics).forEach { topic ->
-                            message2.addReaction(topic.emoji)?.queue()
+                            message2.addReaction(topic.emoji)?.queue({},{})
                         }
+                        future.complete(ticket)
                     }
 
-                    future.complete(null)
+
                 }
             }
         } else {

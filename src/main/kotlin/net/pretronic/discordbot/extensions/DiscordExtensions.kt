@@ -1,11 +1,13 @@
 package net.pretronic.discordbot.extensions
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.DiscordEmoji
+import net.pretronic.discordbot.message.Messages
 import net.pretronic.discordbot.message.language.Language
 
 fun MessageChannel.sendMessageKey(messageKey: String, language: Language?, replacements: Map<String, String>): MessageAction {
@@ -13,7 +15,11 @@ fun MessageChannel.sendMessageKey(messageKey: String, language: Language?, repla
     return if(message0.content != null) {
         var message: String = message0.content
         replacements.forEach { message = message.replace("%${it.key}%", it.value) }
-        sendMessage(message)
+        if(this is PrivateChannel) {
+            sendMessage(EmbedBuilder().setColor(Messages.getRandomBrightColor()).setDescription(message).build())
+        } else {
+            sendMessage(message)
+        }
     } else {
         sendMessage(message0.buildEmbed(replacements)!!)
     }

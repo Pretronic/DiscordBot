@@ -92,6 +92,4 @@ messages:
       iconUrl: "https://i.imgur.com/84zmknE.png"
     color: "RANDOM_BRIGHT"
     description: "%description%"
-  discord.ticket.notOpenedNotify:
-    color: "RANDOM_BRIGHT"
-    description: "%creator% Dein Ticket ist nicht offen. Bitte überprüfe die Ticketerstellungsbeschreibung und klicke auf das ✅ Emoji um das Ticket zu öffnen oder gebe Informationen an."
+  discord.ticket.notOpenedNotify: "%creator% Dein Ticket ist nicht offen. Bitte überprüfe die Ticketerstellungsbeschreibung und klicke auf das ✅ Emoji um das Ticket zu öffnen oder gebe Informationen an."

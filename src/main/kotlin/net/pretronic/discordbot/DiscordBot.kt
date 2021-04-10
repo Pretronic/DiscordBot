@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.pretronic.databasequery.api.driver.DatabaseDriverFactory
 import net.pretronic.databasequery.api.driver.config.DatabaseDriverConfig
 import net.pretronic.discordbot.commands.setup.SetupCommand
+import net.pretronic.discordbot.commands.support.CreateTicketCommand
 import net.pretronic.discordbot.config.Config
 import net.pretronic.discordbot.message.MessageManager
 import net.pretronic.discordbot.message.language.LanguageManager
@@ -99,6 +100,7 @@ class DiscordBot {
                 .setStatus(config.botOnlineStatus)
                 .setActivity(Activity.of(config.botActivityType, config.botActivityName, config.botActivityUrl))
                 .addCommand(SetupCommand())
+                .addCommand(CreateTicketCommand())
                 .setOwnerId("246659669077131264")
 
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
