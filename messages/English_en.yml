@@ -23,9 +23,13 @@ messages:
       iconUrl: "https://i.imgur.com/84zmknE.png"
     description: "React with the corresponding project icon for which you need support
 
-    **<:dkbans:693815906454732800> DKBans**
-    **<:dkcoins:693815987488686170> DKCoins**
-    **<:dkperms:693816467036045343> DKPerms (Verification required)**
+    **<:dkbans:863519915323817984> DKBans**
+    **<:dkcoins:863519906401091614> DKCoins**
+    **<:dkperms:863519925729755188> DKPerms (Verification required)**
+    **<:dkfriends:863519439362588703> DKFriends (Verification required)**
+    **<:dkconnect:863519483436072961> DKConnect (Verification required)**
+    **<:dksupport:863519465588523048> DKSupport (Verification required)**
+    **<:dkmotd:863519398987694111> DKMotd (Verification required)**
     **🇬 Other topics**"
     color: "RANDOM_BRIGHT"
   discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
