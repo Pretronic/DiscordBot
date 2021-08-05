@@ -1,8 +1,7 @@
 package net.pretronic.discordbot.verification
 
-import net.pretronic.databasequery.api.dsl.delete
+import net.dv8tion.jda.api.entities.Member
 import net.pretronic.databasequery.api.dsl.find
-import net.pretronic.databasequery.api.dsl.insert
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.libraries.utility.interfaces.ObjectOwner
 import java.util.concurrent.TimeUnit
@@ -13,53 +12,78 @@ class VerificationManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.createTask(ObjectOwner.SYSTEM)
             .delay(1, TimeUnit.MINUTES)
             .interval(1, TimeUnit.MINUTES)
-            .execute(this::checkPendingVerifications)
+            .execute(this::scheduleVerifications)
 
         discordBot.scheduler.createTask(ObjectOwner.SYSTEM)
             .delay(1, TimeUnit.MINUTES)
             .interval(1, TimeUnit.MINUTES)
-            .execute(this::checkResourceRole)
+            .execute(this::scheduleResourceUserRoles)
     }
 
-    private fun checkPendingVerifications() {
-        this.discordBot.storage.pendingVerifications.find {
+    fun checkMemberRoles(member: Member) {
+        checkVerifiedRole(member)
+        checkResourceRoles(member)
+    }
+
+    private fun checkVerifiedRole(member: Member) {
+        val isVerified: Boolean = !this.discordBot.storage.accountUsers.find {
             get("DiscordId")
-            where("AutoCheck", true)
-        }.execute().forEach { verify(it.getLong("DiscordId")) }
+            where("DiscordId", member.idLong)
+        }.execute().isEmpty
+        val hasVerifiedRole = member.roles.firstOrNull { it.idLong == DiscordBot.INSTANCE.config.verifiedRoleId } != null
+        if(isVerified && !hasVerifiedRole) {
+            member.guild.addRoleToMember(member, DiscordBot.INSTANCE.config.verifiedRole).queue()
+        } else if(!isVerified && hasVerifiedRole) {
+            member.guild.removeRoleFromMember(member, DiscordBot.INSTANCE.config.verifiedRole).queue()
+        }
     }
 
-    fun checkPendingVerification(discordId: Long) {
-        this.discordBot.storage.pendingVerifications.find {
-            get("DiscordId")
-            where("DiscordId", discordId)
-        }.execute().forEach { _ -> verify(discordId) }
-    }
+    private fun checkResourceRoles(member: Member) {
+        val resourceIds: Collection<String> = this.discordBot.storage.mcnativeResourceOwners.find {
+            get("ResourceId")
+            where("DiscordUserId", member.idLong)
+        }.execute().map { it.getString("ResourceId") }
 
-    private fun verify(discordId: Long) {
-        this.discordBot.getPretronicGuild().getMemberById(discordId)?.let {
-            discordBot.config.verifiedRole?.let { role ->
-                it.guild.addRoleToMember(it, role).queue {
-                    discordBot.storage.pendingVerifications.delete {
-                        where("DiscordId", discordId)
-                    }.execute()
+        resourceIds.forEach { resourceId ->
+            this.discordBot.config.getResourceRole(resourceId)?.let { role ->
+                val hasRole = member.roles.firstOrNull { it.idLong == role.idLong } != null
+
+                if(!hasRole) {
+                    member.guild.addRoleToMember(member, role).queue()
+                }
+            }
+        }
+
+
+        member.roles.forEach {
+            val resourceId = DiscordBot.INSTANCE.config.getResourceIdByRoleId(it.idLong)
+            if(resourceId != null) {
+                if(!resourceIds.contains(resourceId)) {
+                    member.guild.removeRoleFromMember(member, it).queue()
                 }
             }
         }
     }
 
-    fun addPendingVerification(discordId: Long, autoCheck: Boolean = false) {
-        this.discordBot.storage.pendingVerifications.insert {
-            set("DiscordId", discordId)
-            set("AutoCheck", autoCheck)
-        }.execute()
+    private fun scheduleVerifications() {
+        this.discordBot.storage.accountUsers.find {
+            get("DiscordId")
+        }.execute().forEach { verify(it.getLong("DiscordId")) }
     }
 
-    private fun checkResourceRole() {
+    private fun verify(discordId: Long) {
+        this.discordBot.getPretronicGuild().getMemberById(discordId)?.let {
+            discordBot.config.verifiedRole.let { role ->
+                it.guild.addRoleToMember(it, role).queue()
+            }
+        }
+    }
+
+    private fun scheduleResourceUserRoles() {
         this.discordBot.storage.mcnativeResourceOwners.find {
             get("ResourceId")
             get("DiscordUserId")
         }.execute().forEach { checkResourceRoleAdd(it.getString("ResourceId"), it.getLong("DiscordUserId")) }
-
     }
 
     private fun checkResourceRoleAdd(resourceId: String, discordId: Long) {
@@ -68,6 +92,5 @@ class VerificationManager(private val discordBot: DiscordBot) {
                 member.guild.addRoleToMember(member, role).queue()
             }
         }
-
     }
 }

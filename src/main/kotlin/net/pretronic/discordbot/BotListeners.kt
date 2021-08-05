@@ -57,18 +57,12 @@ class BotListeners(private val discordBot: DiscordBot): ListenerAdapter() {
     }
 
     override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
-        discordBot.verificationManager.checkPendingVerification(event.member.idLong)
+        DiscordBot.INSTANCE.verificationManager.checkMemberRoles(event.member)
     }
 
     override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
         discordBot.ticketManager.getTicket(event.user.idLong)?.let {
             it.state = TicketState.CLOSED
-        }
-
-        event.member?.let { member ->
-            if(member.roles.any { role -> role.idLong == DiscordBot.INSTANCE.config.verifiedRoleId }) {
-                discordBot.verificationManager.addPendingVerification(event.user.idLong)
-            }
         }
     }
 

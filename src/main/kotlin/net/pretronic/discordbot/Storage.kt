@@ -25,7 +25,9 @@ class Storage(oldDatabase : Database, botDatabase: Database) {
     }.create()
 
 
-    val pendingVerifications: DatabaseCollection = botDatabase.getCollection("pretronic_bot_pending_verifications")
+    //val pendingVerifications: DatabaseCollection = botDatabase.getCollection("pretronic_bot_pending_verifications")
+
+    val accountUsers: DatabaseCollection = botDatabase.getCollection("pretronic_bot_users")
 
     val mcnativeResourceOwners: DatabaseCollection = botDatabase.getCollection("pretronic_bot_mcnative_resource_owners")
 }

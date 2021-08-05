@@ -39,8 +39,8 @@ class Config {
 
 
     var verifiedRoleId: Long = 0
-    val verifiedRole: Role?
-        get() = getPretronicGuild().getRoleById(verifiedRoleId)
+    val verifiedRole: Role
+        get() = getPretronicGuild().getRoleById(verifiedRoleId)!!
     var teamRoleId: Long = 0
     @DocumentIgnored lateinit var teamRole: Role
     var guildId: Long = 0
@@ -124,5 +124,12 @@ class Config {
         return this.resourceRoleIds[resourceId]?.let {
             getPretronicGuild().getRoleById(it)
         }
+    }
+
+    fun getResourceIdByRoleId(roleId: Long): String? {
+        this.resourceRoleIds.forEach {
+            if(it.value == roleId) return it.key
+        }
+        return null
     }
 }
