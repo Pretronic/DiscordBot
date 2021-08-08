@@ -33,7 +33,15 @@ messages:
     **🇬 Andere Themen**"
     color: "RANDOM_BRIGHT"
   discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
-  discord.ticket.closed.self: "Your ticket has been closed."
+  discord.ticket.closed.self:
+    description: "Hallo, danke für das kontaktieren unseres supports. Ich hoffe, wir konnten dir beim Lösen deines Problems schnell helfen.
+    Log: %pasteKey%
+
+    Wusstest du schon, wir bieten 5 weitere hoch qualitative Premium Plugins an? Wir würden dich anerkennen, wenn du das DKProject Projekt mit dem Kauf unseres Produktpack für nur 49,99 Euro unterstützten würdest."
+    thumbnail: 'https://content.pretronic.net/brand/logo/pretronic-blue-new.png'
+    image: 'https://content.pretronic.net/products/dkplugins-banner-text2.png'
+    footer:
+      text: 'Die DKPlugins Serie umfasst sieben hochwertige und funktionsreiche Plugins, mit denen Sie Ihr gesamtes Netzwerk verwalten können und Ihren Spielern ein besseres Spielerlebnis als je zuvor bieten können.'
   discord.ticket.create:
     author:
       name: "Information"

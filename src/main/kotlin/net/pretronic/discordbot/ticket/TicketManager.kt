@@ -56,7 +56,7 @@ class TicketManager(private val discordBot: DiscordBot) {
                     }.executeAndGetGeneratedKeyAsInt("Id")
 
                     val ticket = Ticket(id, it.idLong, TicketState.TOPIC_CHOOSING, language, member.idLong, message.idLong, now, 0, arrayListOf())
-                    ticket.state.handleChange(ticket)
+                    ticket.state.handleChange(null, ticket)
                     tickets.insert(ticket)
 
                     discordBot.storage.ticketParticipants.insert {
@@ -116,6 +116,17 @@ class TicketManager(private val discordBot: DiscordBot) {
                         }
                     }
                 }
+    }
+
+    private fun scheduleTicketMaxLifetime() {
+        //Last: 10
+        //Now: 30
+        //30-14=16
+        val time = System.currentTimeMillis()-TimeUnit.DAYS.toMillis(14)
+        discordBot.storage.ticket.find {
+            where("State", "Open")
+            whereLower("LastMessageTime", time)
+        }
     }
 
     private class CloseDiscordUserIdQuery : CacheQuery<Ticket> {

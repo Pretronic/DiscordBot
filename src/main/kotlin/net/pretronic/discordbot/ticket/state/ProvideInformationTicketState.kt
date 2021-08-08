@@ -16,7 +16,7 @@ class ProvideInformationTicketState: TicketState {
 
     override val name: String = "ProvideInformation"
 
-    override fun handleChange(ticket: Ticket) {
+    override fun handleChange(oldState: TicketState?, ticket: Ticket) {
         ticket.creator.asMember()?.let {
             ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE)?.queue()
         }

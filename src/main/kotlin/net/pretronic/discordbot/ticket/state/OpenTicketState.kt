@@ -13,7 +13,7 @@ class OpenTicketState: TicketState {
 
     override val name: String = "Open"
 
-    override fun handleChange(ticket: Ticket) {
+    override fun handleChange(oldState: TicketState?, ticket: Ticket) {
         ticket.discordChannel?.let {
             ticket.clearTicketNotOpenedNotifications(it)
         }

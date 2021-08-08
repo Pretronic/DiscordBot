@@ -13,7 +13,7 @@ class TopicChoosingTicketState : TicketState {
 
     override val name: String = "TopicChoosing"
 
-    override fun handleChange(ticket: Ticket) {
+    override fun handleChange(oldState: TicketState?, ticket: Ticket) {
         ticket.creator.asMember()?.let {
             ticket.discordChannel?.upsertPermissionOverride(it)?.setAllow(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ)?.setDeny(Permission.MESSAGE_WRITE)?.queue() }
     }

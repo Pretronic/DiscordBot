@@ -25,7 +25,7 @@ interface TicketState {
 
     val name: String
 
-    fun handleChange(ticket: Ticket)
+    fun handleChange(oldState: TicketState?, ticket: Ticket)
 
     fun onMessageReceive(ticket: Ticket, event: GuildMessageReceivedEvent)
 

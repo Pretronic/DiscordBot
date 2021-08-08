@@ -3,6 +3,7 @@ package net.pretronic.discordbot.message
 import net.pretronic.discordbot.DiscordBot
 import net.pretronic.discordbot.message.embed.EmbedAuthorData
 import net.pretronic.discordbot.message.embed.EmbedData
+import net.pretronic.discordbot.message.embed.EmbedFooterData
 import net.pretronic.discordbot.message.language.Language
 import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.entry.PrimitiveEntry
@@ -21,7 +22,7 @@ class MessageManager(private val discordBot: DiscordBot) {
         val pack : MessagePack = packs.firstOrNull { it.language == language }?:getDefaultPack()
 
         return pack.messages.firstOrNull { it.key == messageKey}?: getDefaultPack().messages.firstOrNull { it.key == messageKey }
-            ?: throw IllegalArgumentException("No message for key: $messageKey found")
+        ?: throw IllegalArgumentException("No message for key: $messageKey found")
     }
 
     private fun getDefaultPack() : MessagePack {
@@ -77,7 +78,20 @@ class MessageManager(private val discordBot: DiscordBot) {
                 val description = if(it.contains("description")) it.getString("description") else null
                 val thumbnail = if(it.contains("thumbnail")) it.getString("thumbnail") else null
 
-                messages.add(Message(it.key, null, EmbedData(embedAuthorData, description, it.getString("color"), thumbnail)))
+                var footerEmbedData: EmbedFooterData? = null
+                if(it.contains("footer")) {
+                    val footerData = it.getDocument("footer")
+                    footerEmbedData = EmbedFooterData(footerData.getString("text"),
+                            footerData.getString("timestamp"),
+                            footerData.getString("iconUrl"))
+                }
+
+                messages.add(Message(it.key, null, EmbedData(embedAuthorData,
+                        description,
+                        it.getString("color"),
+                        thumbnail,
+                        footerEmbedData,
+                        it.getString("image"))))
             }
         }
         val messagePack = MessagePack(language, messages)

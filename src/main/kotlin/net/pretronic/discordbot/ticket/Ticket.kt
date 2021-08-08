@@ -13,6 +13,11 @@ import net.pretronic.discordbot.ticket.topic.TicketTopic
 import net.pretronic.discordbot.ticket.topic.TicketTopicContent
 import net.pretronic.libraries.document.Document
 import net.pretronic.libraries.document.type.DocumentFileType
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.CompletableFuture
+import kotlin.collections.ArrayList
 
 class Ticket(val id: Int,
              val discordChannelId: Long,
@@ -45,8 +50,8 @@ class Ticket(val id: Int,
                 set("State", value.name)
                 where("Id", id)
             }.executeAsync()
+            value.handleChange(field, this)
             field = value
-            value.handleChange(this)
         }
     val participants: MutableCollection<TicketParticipant> = participants
     val creator: TicketParticipant
@@ -92,13 +97,18 @@ class Ticket(val id: Int,
         return participants.firstOrNull { it.role == TicketParticipantRole.CREATOR && it.discordId == discordId } != null
     }
 
-    fun close() {
-        DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
-        creator.asMember()?.user?.openPrivateChannel()?.queue ({ channel ->
-            channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, language).queue()
-        }, {
-            //Ignored
-        })
+    fun close(oldState: TicketState?) {
+        generateLog().thenAccept { pasteKey ->
+            if(oldState == TicketState.OPEN) logTicketAction(TicketAction.CLOSE, pasteKey)
+
+            DiscordBot.INSTANCE.jda.getTextChannelById(this.discordChannelId)?.delete()?.queue()
+            creator.asMember()?.user?.openPrivateChannel()?.queue ({ channel ->
+                channel.sendMessageKey(Messages.DISCORD_TICKET_CLOSED_SELF, language, mapOf(Pair("pasteKey", pasteKey?:"No log"))).queue()
+            }, {
+                //Ignored
+            })
+        }
+
     }
 
     fun logTicketAction(ticketAction: TicketAction, pasteKey: String?) {
@@ -126,6 +136,48 @@ class Ticket(val id: Int,
             set("TicketNotOpenedNotificationMessages", "{}")
             where("Id", id)
         }.executeAsync()
+    }
+
+    private fun generateLog(): CompletableFuture<String?> {
+        val future = CompletableFuture<String?>()
+        DiscordBot.INSTANCE.getPretronicGuild().getTextChannelById(discordChannelId)?.history?.retrievePast(100)?.queue ({
+            var longerHistory = false
+            if (it.isEmpty()) {
+                future.complete("Empty")
+                return@queue
+            }
+            it.reverse()
+
+            if (!it[0].author.isBot) {
+                longerHistory = true
+            }
+            val chatLog = StringBuilder()
+            if (longerHistory) {
+                chatLog.append("*** HISTORY LIMITED TO 100 MESSAGES ***").append("\n")
+            }
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+                    .withLocale(Locale.ENGLISH)
+                    .withZone(ZoneId.systemDefault())
+            for (message in it) {
+                val authorAndDate = "[" + formatter.format(message!!.timeCreated.toInstant()) + "] " + message.author.name + ": "
+                var content = message.contentDisplay
+                if (message.attachments.isNotEmpty()) {
+                    content += " [+" + message.attachments.size + " attachments uploaded]"
+                }
+                if (message.embeds.isNotEmpty()) {
+                    val embed = StringBuilder()
+                    for (messageEmbed in message.embeds) {
+                        embed.append("Embed: ").append(messageEmbed.author!!.name).append(" -> ").append(messageEmbed.description)
+                    }
+                    content += embed.toString()
+                }
+                chatLog.append(authorAndDate).append(content).append("\n")
+            }
+            future.complete(DiscordBot.INSTANCE.pasteAndGetKey(chatLog.toString()))
+        },{
+            future.complete(null)
+        })
+        return future
     }
 
     fun init(): Ticket {

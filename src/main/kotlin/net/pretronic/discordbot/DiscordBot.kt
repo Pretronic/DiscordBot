@@ -126,9 +126,7 @@ class DiscordBot {
             val response = client.execute(post)
             val result = EntityUtils.toString(response.entity)
             return "https://paste.pretronic.net/" + DocumentFileType.JSON.reader.read(result).getString("key")
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        } catch (e: IOException) {}
         return "Connection with https://paste.pretronic.net failed!"
     }
 }
