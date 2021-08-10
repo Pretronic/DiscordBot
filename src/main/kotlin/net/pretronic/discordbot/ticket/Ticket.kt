@@ -159,7 +159,7 @@ class Ticket(val id: Int,
                     .withLocale(Locale.ENGLISH)
                     .withZone(ZoneId.systemDefault())
             for (message in it) {
-                val authorAndDate = "[" + formatter.format(message!!.timeCreated.toInstant()) + "] " + message.author.name + ": "
+                val authorAndDate = "[" + formatter.format(message.timeCreated.toInstant()) + "] " + message.author.name + ": "
                 var content = message.contentDisplay
                 if (message.attachments.isNotEmpty()) {
                     content += " [+" + message.attachments.size + " attachments uploaded]"
@@ -167,7 +167,7 @@ class Ticket(val id: Int,
                 if (message.embeds.isNotEmpty()) {
                     val embed = StringBuilder()
                     for (messageEmbed in message.embeds) {
-                        embed.append("Embed: ").append(messageEmbed.author!!.name).append(" -> ").append(messageEmbed.description)
+                        embed.append("Embed: ").append(messageEmbed?.author?.name?:"none").append(" -> ").append(messageEmbed.description)
                     }
                     content += embed.toString()
                 }
