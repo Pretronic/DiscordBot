@@ -1,0 +1,109 @@
+messages:
+  command.verify.start: "In order to authenticate yourself with your SpigotMc account please click the following link
+  https://www.spigotmc.org/conversations/add?to=Dkrieger&title=Authentication%20%secret%"
+  command.verify.already: "Your account is already verified or there is already an open verification request."
+  account.verified.failed: "Invalid authentication key or your account is already verified."
+  account.verified.discord: "Your Discord account is now successfully linked to your SpigotMc account (%spigotMcUser%)"
+  account.verified.spigotmc: "Your SpigotMc account is now successfully linked to your Discord account (%discordUser%)"
+  spigotmc.getuserid.send: "Your UserId: %key%"
+  spigotmc.getuserid.notExist: "We don´t have any UserId for you!"
+  discord.getuserid.send: "Your UserId: %key%"
+  discord.getuserid.notExist: "You need to verify your SpigotMC Account first with !verify command"
+  discord.ticket.controlMessage:
+    author:
+      name: "Erstelle Ticket"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    description: "Du hast ein Support Ticket erstellt. Reagiert mit :lock: um das Ticket zu schließen. Das Ticket wird nach 14 Tagen inaktivität automatisch geschlossen."
+    color: "RANDOM_BRIGHT"
+  discord.ticket.topicChoose:
+    author:
+      name: "Klicke um ein anderes Projekt zu wählen"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    description: "Reagiere mit dem entsprechenden Projektsymbol, für das du Unterstützung benötigst.
+
+    **<:dkbans:863519915323817984> DKBans**
+    **<:dkcoins:863519906401091614> DKCoins**
+    **<:dkperms:863519925729755188> DKPerms (Verifizierung benötigt)**
+    **<:dkfriends:863519439362588703> DKFriends (Verifizierung benötigt)**
+    **<:dkconnect:863519483436072961> DKConnect (Verifizierung benötigt)**
+    **<:dksupport:863519465588523048> DKSupport (Verifizierung benötigt)**
+    **<:dkmotd:863519398987694111> DKMotd (Verifizierung benötigt)**
+    **🇬 Andere Themen**"
+    color: "RANDOM_BRIGHT"
+  discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
+  discord.ticket.closed.self:
+    description: "Dein Ticket wurde geschlossen.
+
+    Hallo, danke für das kontaktieren unseres supports. Ich hoffe, wir konnten dir beim Lösen deines Problems schnell helfen.
+    Log: %pasteKey%
+
+    Wusstest du schon, wir bieten 5 weitere hoch qualitative Premium Plugins an? Wir würden dich anerkennen, wenn du das DKProject Projekt mit dem Kauf unseres Produktpack für nur 49,99 Euro unterstützten würdest."
+    thumbnail: 'https://content.pretronic.net/brand/logo/pretronic-blue-new.png'
+    image: 'https://content.pretronic.net/products/dkplugins-banner-text2.png'
+    footer:
+      text: 'Die DKPlugins Serie umfasst sieben hochwertige und funktionsreiche Plugins, mit denen Sie Ihr gesamtes Netzwerk verwalten können und Ihren Spielern ein besseres Spielerlebnis als je zuvor bieten können.'
+  discord.ticket.create:
+    author:
+      name: "Information"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/NtMrDZt.png"
+    description: ":flag_gb: English
+    The Community Support is not an official support, it is only used to get fast support through the community and clarify questions. If you have a major issues or question, please contact our official support via ticket.
+
+    If you need support for our premium resources, your Discord account has to be verified with your Pretronic account.
+    Verification: https://discord.pretronic.net/verify
+    (To get support for the legacy DKPerms, send a message on SpigotMC to Dkrieger)
+
+
+    => React in the appropriate language to open a official support ticket.
+
+
+    :flag_de: German
+
+    Der Community Support ist keine offizieller Support, dieser dient ausschliesslich um schnellen Support über die Community zu erhalten und fragen zu stellen. Sollten Sie ein grösseres Problem oder Frage haben, so wenden Sie sich bitte an unseren Offiziellen Support über Ticket.
+
+    Sollten Sie Support für unsere Premium Resource benötigen, müssen sie ihren Discord Account mit ihrem Pretronic Account verifizieren.
+    Verifizierung: https://discord.pretronic.net/verify
+    (Um support für die alte DKPerms Version zu erhalten, senden sie eine Nachicht an Dkrieger auf SpigotMc)
+
+
+    => Reagiere mit der entsprechenden Sprache, um ein Support Ticket zu öffnen"
+    color: "#3f51b5"
+  discord.ticket.provideInformation:
+    author:
+      name: "Gib uns Informationen für %project% an"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/NtMrDZt.png"
+    description: "Gebe uns so viele Informationen wie möglich. Einschließlich der folgenden Punkte:
+
+    :white_check_mark: Eine klare Problembeschreibung
+    :white_check_mark: Ihre Serverversion und Typ (z.B. Spigot / BungeeCord)
+    :white_check_mark: Deine Plugin-Version und Speicherungssystem (z.B. MySQL / H2)
+    :white_check_mark: Deine /plugin Liste
+    :white_check_mark: Deinen kompletten Serverlog auf https://paste.pretronic.net/
+
+    Reagiere mit ➡️ um ein weiteres Projekt auszuwählen oder ✅ um das Ticket zu erstellen."
+    color: "RANDOM_BRIGHT"
+  discord.ticket.provideInformation.need:
+    author:
+      name: "Bitte gib uns Informationen!"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/yqKqqTX.png"
+    color: "RANDOM_BRIGHT"
+  discord.ticket.provideInformation.finish:
+    author:
+      name: "Danke für die Informationen!"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+    color: "RANDOM_BRIGHT"
+    description: "Ein Supporter wird dir so schnell wie möglich helfen!"
+    thumbnail: "https://i.imgur.com/mvuOqlq.png"
+  discord.ticket.displayInformation:
+    author:
+      name: "Project: %topic%"
+      url: "https://www.paypal.com/pools/c/8aWrUZXUi6"
+      iconUrl: "https://i.imgur.com/84zmknE.png"
+    color: "RANDOM_BRIGHT"
+    description: "%description%"
+  discord.ticket.notOpenedNotify: "%creator% Dein Ticket ist nicht offen. Bitte überprüfe die Ticketerstellungsbeschreibung und klicke auf das ✅ Emoji um das Ticket zu öffnen oder gebe Informationen an."
