@@ -34,7 +34,9 @@ messages:
     color: "RANDOM_BRIGHT"
   discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
   discord.ticket.closed.self:
-    description: "Hallo, danke für das kontaktieren unseres supports. Ich hoffe, wir konnten dir beim Lösen deines Problems schnell helfen.
+    description: "Dein Ticket wurde geschlossen.
+
+    Hallo, danke für das kontaktieren unseres supports. Ich hoffe, wir konnten dir beim Lösen deines Problems schnell helfen.
     Log: %pasteKey%
 
     Wusstest du schon, wir bieten 5 weitere hoch qualitative Premium Plugins an? Wir würden dich anerkennen, wenn du das DKProject Projekt mit dem Kauf unseres Produktpack für nur 49,99 Euro unterstützten würdest."

@@ -34,7 +34,9 @@ messages:
     color: "RANDOM_BRIGHT"
   discord.ticket.alreadyCreated: "You've already created a ticket, close current one to create new one!"
   discord.ticket.closed.self:
-    description: "Hi, thanks for contacting our support. I hope we could help you and solve your problem quickly.
+    description: "Your ticket has been closed.
+
+    Hi, thanks for contacting our support. I hope we could help you and solve your problem quickly.
     Log: %pasteKey%
 
 
