@@ -67,8 +67,10 @@ class TicketManager(private val discordBot: DiscordBot) {
 
                     it.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE, language).queue { message2 ->
                         ticket.topicChooseMessageId = message2.idLong
-                        discordBot.config.getAccessAbleTicketTopics(member.idLong, ticket.topics).forEach { topic ->
-                            message2.addReaction(topic.emoji)?.queue({},{})
+                        discordBot.config.getAccessAbleTicketTopics(member.idLong, ticket.topics).thenAccept { topics ->
+                            topics.forEach { topic ->
+                                message2.addReaction(topic.emoji)?.queue({},{})
+                            }
                         }
                         future.complete(ticket)
                     }

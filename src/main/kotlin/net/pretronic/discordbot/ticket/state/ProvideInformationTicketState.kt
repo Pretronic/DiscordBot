@@ -48,8 +48,10 @@ class ProvideInformationTicketState: TicketState {
 
                 event.channel.sendMessageKey(Messages.DISCORD_TICKET_TOPIC_CHOOSE, ticket.language).queue { message2 ->
                     ticket.topicChooseMessageId = message2.idLong
-                    DiscordBot.INSTANCE.config.getAccessAbleTicketTopics(event.userIdLong, ticket.topics).forEach { topic ->
-                        message2.addReaction(topic.emoji)?.queue({},{/*Ignored*/})
+                    DiscordBot.INSTANCE.config.getAccessAbleTicketTopics(event.userIdLong, ticket.topics).thenAccept { topics ->
+                        topics.forEach { topic ->
+                            message2.addReaction(topic.emoji)?.queue({},{/*Ignored*/})
+                        }
                     }
                     ticket.state = TicketState.TOPIC_CHOOSING
                 }

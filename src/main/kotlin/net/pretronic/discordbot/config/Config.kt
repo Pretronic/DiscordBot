@@ -18,6 +18,7 @@ import net.pretronic.libraries.utility.duration.DurationProcessor
 import net.pretronic.spigotsite.api.user.User
 import java.net.InetSocketAddress
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
 
 class Config {
 
@@ -93,27 +94,30 @@ class Config {
         return ticketTopics.first { it.name == name }
     }
 
-    fun getAccessAbleTicketTopics(discordId: Long, topics: Collection<TicketTopicContent>): List<TicketTopic> {
-        val accessAble = ArrayList<TicketTopic>()
-        val member = getPretronicGuild().getMemberById(discordId)
-        ticketTopics.forEach {
-            if(topics.firstOrNull { content -> content.topic == it } == null) {
-                it.roleIds?.let { roleIds ->
-                    member?.let { member ->
-                        var added = false
-                        roleIds.forEach { roleId ->
-                            if(member.roles.any { role -> role.idLong == roleId }) {
-                                if(!added) {
-                                    accessAble.add(it)
-                                    added = true
+    fun getAccessAbleTicketTopics(discordId: Long, topics: Collection<TicketTopicContent>): CompletableFuture<List<TicketTopic>> {
+        val future = CompletableFuture<List<TicketTopic>>()
+        getPretronicGuild().retrieveMemberById(discordId).queue { member ->
+            val accessAble = ArrayList<TicketTopic>()
+            ticketTopics.forEach {
+                if(topics.firstOrNull { content -> content.topic == it } == null) {
+                    it.roleIds?.let { roleIds ->
+                        member?.let { member ->
+                            var added = false
+                            roleIds.forEach { roleId ->
+                                if(member.roles.any { role -> role.idLong == roleId }) {
+                                    if(!added) {
+                                        accessAble.add(it)
+                                        added = true
+                                    }
                                 }
                             }
                         }
-                    }
-                }?:accessAble.add(it)
+                    }?:accessAble.add(it)
+                }
             }
+            future.complete(accessAble)
         }
-        return accessAble
+        return future
     }
 
     fun getPretronicGuild() : Guild {

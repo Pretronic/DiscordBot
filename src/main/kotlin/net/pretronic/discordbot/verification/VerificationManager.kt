@@ -72,11 +72,11 @@ class VerificationManager(private val discordBot: DiscordBot) {
     }
 
     private fun verify(discordId: Long) {
-        this.discordBot.getPretronicGuild().getMemberById(discordId)?.let {
+        this.discordBot.getPretronicGuild().retrieveMemberById(discordId).queue ({
             discordBot.config.verifiedRole.let { role ->
                 it.guild.addRoleToMember(it, role).queue()
             }
-        }
+        }, {/*Ignored*/})
     }
 
     private fun scheduleResourceUserRoles() {
@@ -87,10 +87,10 @@ class VerificationManager(private val discordBot: DiscordBot) {
     }
 
     private fun checkResourceRoleAdd(resourceId: String, discordId: Long) {
-        this.discordBot.getPretronicGuild().getMemberById(discordId)?.let { member ->
+        this.discordBot.getPretronicGuild().retrieveMemberById(discordId).queue ({ member ->
             this.discordBot.config.getResourceRole(resourceId)?.let { role ->
                 member.guild.addRoleToMember(member, role).queue()
             }
-        }
+        },{/*Ignored*/})
     }
 }
