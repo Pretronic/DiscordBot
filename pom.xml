@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <dependency.spigotsite.version>1.0.2.4-SNAPSHOT</dependency.spigotsite.version>
-        <dependency.jda.version>4.1.1_165</dependency.jda.version>
+        <dependency.jda.version>4.3.0_333</dependency.jda.version>
         <dependency.jda.utilities.version>3.0.4</dependency.jda.utilities.version>
         <dependency.emoji.java>5.1.1</dependency.emoji.java>
 
@@ -50,6 +50,11 @@
             <id>jcenter</id>
             <name>jcenter-bintray</name>
             <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
 

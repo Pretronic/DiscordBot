@@ -106,7 +106,7 @@ class DiscordBot {
         val jda = JDABuilder.create(this.config.botToken, GatewayIntent.values().toList())
                 .setAutoReconnect(true)
                 .addEventListeners(commandClientBuilder.build(), BotListeners(this))
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                //.setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build()
         jda.awaitReady()
         return jda

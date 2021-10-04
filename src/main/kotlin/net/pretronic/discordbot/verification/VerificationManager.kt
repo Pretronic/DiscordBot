@@ -72,11 +72,12 @@ class VerificationManager(private val discordBot: DiscordBot) {
     }
 
     private fun verify(discordId: Long) {
+        println("MemberId:")
         this.discordBot.getPretronicGuild().retrieveMemberById(discordId).queue ({
             discordBot.config.verifiedRole.let { role ->
                 it.guild.addRoleToMember(it, role).queue()
             }
-        }, {/*Ignored*/})
+        })
     }
 
     private fun scheduleResourceUserRoles() {
@@ -91,6 +92,6 @@ class VerificationManager(private val discordBot: DiscordBot) {
             this.discordBot.config.getResourceRole(resourceId)?.let { role ->
                 member.guild.addRoleToMember(member, role).queue()
             }
-        },{/*Ignored*/})
+        })
     }
 }
