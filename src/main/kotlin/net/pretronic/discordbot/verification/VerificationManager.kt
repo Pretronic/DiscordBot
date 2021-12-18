@@ -77,7 +77,7 @@ class VerificationManager(private val discordBot: DiscordBot) {
             discordBot.config.verifiedRole.let { role ->
                 it.guild.addRoleToMember(it, role).queue()
             }
-        })
+        },{/*Ignored exception*/})
     }
 
     private fun scheduleResourceUserRoles() {
@@ -92,6 +92,6 @@ class VerificationManager(private val discordBot: DiscordBot) {
             this.discordBot.config.getResourceRole(resourceId)?.let { role ->
                 member.guild.addRoleToMember(member, role).queue()
             }
-        })
+        },{/*Ignored exception*/})
     }
 }
