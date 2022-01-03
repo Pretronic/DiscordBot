@@ -2,7 +2,7 @@ botToken: 'NzMwMTI0NDQxODA3MzU1OTk1.XwS7dA.d54Frswazyw8-d9A84SZVSSTgvQ'
 databaseName: 'pretronic'
 botDatabaseName: 'pretronic-bot'
 storage:
-  address: 'deyna.ch:9877'
+  address: '192.168.1.14:3306'
   username: 'discordbot'
   password: '7nNjvY5v7v,ks59RruSZSzXg#U'
   driver: 'net.pretronic.databasequery.sql.driver.SQLDatabaseDriver'
